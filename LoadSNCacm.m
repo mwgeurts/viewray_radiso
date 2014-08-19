@@ -39,6 +39,9 @@ if ~name == 0
     % Open file handle
     fid = fopen(fullfile(path, name), 'r');
     
+    % Initialize data array
+    handles.([head,'data']) = [];
+    
     % While the end-of-file has not been reached
     while ~feof(fid)
         % Retrieve the next line in the file
@@ -111,10 +114,8 @@ if ~name == 0
             % Scan for all data
             data = textscan(fid, ['%s', repmat(' %f', 1, 1386 + 10)]);
             data{1,1} = zeros(size(data{1,2},1),1);
-            handles.([head,'data']) = cell2mat(data);
-
-            % Stop loading the file, as the data was found
-            break;
+            handles.([head,'data']) = ...
+                vertcat(handles.([head,'data']), cell2mat(data));
         end
     end
 

@@ -40,30 +40,34 @@ for i = 1:size(triplets,1)
     [x2, y2]  = pol2cart(alpha(:,triplets(i,2))*pi/180, radius);
     [x3, y3]  = pol2cart(alpha(:,triplets(i,3))*pi/180, radius);
     
-    % Compute intersection points
-    [x12, y12] = polyxpoly(x1, y1, x2, y2);
-    [x13, y13] = polyxpoly(x1, y1, x3, y3);
-    [x23, y23] = polyxpoly(x2, y2, x3, y3);
+    % Compute intersection of triplet rays 1 and 2
+    p1 = polyfit(x1,y1,1);
+    p2 = polyfit(x2,y2,1);
+    x12 = fzero(@(x) polyval(p1-p2,x),3);
+    y12 = polyval(p1,x12);
     
-    % If lines do not intersect, skip
-    if size(x12,2) == 0 || size(x13,2) == 0 || size(x23,2) == 0
-        continue
+    % Compute intersection of triplet rays 1 and 3
+    p1 = polyfit(x1,y1,1);
+    p2 = polyfit(x3,y3,1);
+    x13 = fzero(@(x) polyval(p1-p2,x),3);
+    y13 = polyval(p1,x13);
+    
+    % Compute intersection of triplet 1 and 2
+    p1 = polyfit(x2,y2,1);
+    p2 = polyfit(x3,y3,1);
+    x23 = fzero(@(x) polyval(p1-p2,x),3);
+    y23 = polyval(p1,x23);
+    
+   
+    % Create triangulation object given intersection points
+    DT = delaunayTriangulation([x12; x13; x23], [y12; y13; y23]);
+    
+    % Compute incenter and radius
+    [IC, r] = incenter(DT);
+    if ~isempty(IC)
+        circles(i,1:2) = IC;
+        circles(i,3) = r;
     end
-    
-    % Compute circle center
-    circles(i,1) = mean([x12 x13 x23]);
-    circles(i,2) = mean([y12 y13 y23]);
-    
-    % Compute radii of tangent circle
-    r1 = abs(det([[x1(2);y1(2)]-[x1(1);y1(1)],[circles(i,1);circles(i,2)]- ...
-        [x1(1);y1(1)]]))/abs([x1(2);y1(2)]-[x1(1);y1(1)]);
-    r2 = abs(det([[x2(2);y2(2)]-[x2(1);y2(1)],[circles(i,1);circles(i,2)]- ...
-        [x2(1);y2(1)]]))/abs([x2(2);y2(2)]-[x2(1);y2(1)]);
-    r3 = abs(det([[x3(2);y3(2)]-[x3(1);y3(1)],[circles(i,1);circles(i,2)]- ...
-        [x3(1);y3(1)]]))/abs([x3(2);y3(2)]-[x3(1);y3(1)]);
-
-    % Set maximum
-    circles(i,3) = max(max([r1; r2; r3]));
 end
 
 %% Find smallest circle intersecting all rays
@@ -88,7 +92,7 @@ for i = 1:size(circles,1)
             % Compute intersection
             [xc, ~] = linecirc((y(2)-y(1))/(x(2)-x(1)), ...
                 y(2)-(y(2)-y(1))/(x(2)-x(1))*x(2), circles(i,1), ...
-                circles(i,2), circles(i,3));
+                circles(i,2), circles(i,3)+1e-6);
             
             % If the ray did not intersect with the circle
             if isnan(xc(1))
@@ -104,7 +108,13 @@ for i = 1:size(circles,1)
             
             % Set radiation isocenter to the smallest circle
             radiso = circles(i,:);
+            
+            % Exit the circle loop, as the smallest circle was found
             break;
         end
     end 
+end
+
+if ~exist('radiso', 'var')
+    radiso = circles(size(circles,1),:);
 end

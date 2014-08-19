@@ -128,15 +128,15 @@ switch get(handles.([head, 'display']),'Value')
                 handles.([head, 'radiso'])(3));
             x = x + handles.([head, 'radiso'])(1);
             y = y + handles.([head, 'radiso'])(2);
-            plot(y, x, '-r','LineWidth',2);
-            legends{1} = sprintf('%0.2f cm', ...
-                handles.([head, 'radiso'])(3));
+            plot(y * 10, x * 10, '-r','LineWidth',2);
+            legends{1} = sprintf('%0.2f mm', ...
+                handles.([head, 'radiso'])(3) * 10);
             
             % Plot field centers
             for i = 1:size(handles.([head, 'alpha']),2)
                 [x, y]  = pol2cart(handles.([head, 'alpha'])(:,i)*pi/180, ...
                     handles.radius);
-                plot(y, x, '-', 'Color', cmap(i,:));
+                plot(y * 10, x * 10, '-', 'Color', cmap(i,:));
                 
                 % Compute central axis angle (for display)
                 if handles.([head,'alpha'])(2,i) < handles.([head,'alpha'])(1,i)
@@ -152,13 +152,13 @@ switch get(handles.([head, 'display']),'Value')
 
             legend(legends);
 
-            xlabel('IEC X Axis (cm)');
-            ylabel('IEC Z Axis (cm)');
+            xlabel('IEC X Axis (mm)');
+            ylabel('IEC Z Axis (mm)');
 
-            xlim([-1 1]);
-            set(gca,'XTick',-1:0.2:1);
-            ylim([-1 1]);
-            set(gca,'YTick',-1:0.2:1);
+            xlim([-5 5]);
+            set(gca,'XTick',-5:1:5);
+            ylim([-5 5]);
+            set(gca,'YTick',-5:1:5);
             hold off;
             grid on;
 
@@ -300,15 +300,9 @@ switch get(handles.([head, 'display']),'Value')
                     handles.radius);
         
                 % Compute disance from line to radiation isocenter
-                r = det([[x(2);y(2)]-[x(1);y(1)], ...
-                    [handles.([head,'radiso'])(1); ...
-                    handles.([head,'radiso'])(2)]-[x(1);y(1)]])/...
-                    abs([x(2);y(2)]-[x(1);y(1)]);
-                if r(1) ~= 0
-                    offsets(1,i) = r(1);
-                else
-                    offsets(1,i) = r(2);
-                end
+                offsets(1,i) = -((y(2)-y(1)) * handles.([head,'radiso'])(1) ...
+                    - (x(2)-x(1)) * handles.([head,'radiso'])(2) - x(1) * ...
+                    y(2) + x(2) * y(1)) / sqrt((x(2)-x(1))^2 + (y(2)-y(1))^2);
 
                 % Compute central axis angle (for display)
                 if handles.([head,'alpha'])(2,i) < handles.([head,'alpha'])(1,i)
@@ -321,13 +315,13 @@ switch get(handles.([head, 'display']),'Value')
             end
             
             % Plot map
-            h = plot(offsets(2,:), offsets(1,:), 'o');
+            h = plot(offsets(2,:), offsets(1,:) * 10, 'o');
             set(h,'MarkerEdgeColor','b','MarkerFaceColor','b')
             xlim([min(offsets(2,:))-0.1 max(offsets(2,:))+0.1]);
             xlabel('Beam Angle (deg)');
-            ylim([-0.3 0.3]);
-            set(gca,'YTick', -0.3:0.1:0.3);
-            ylabel('MLC X Offset (cm)');
+            ylim([-3 3]);
+            set(gca,'YTick', -3:0.5:3);
+            ylabel('MLC X Offset (mm)');
             grid on;
             
             % Turn on display
@@ -430,13 +424,13 @@ switch get(handles.([head, 'display']),'Value')
             end
             
             % Plot map
-            h = plot(offsets(2,:), offsets(1,:), 'o');
+            h = plot(offsets(2,:), offsets(1,:) * 10, 'o');
             set(h,'MarkerEdgeColor','b','MarkerFaceColor','b')
             xlim([min(offsets(2,:))-0.1 max(offsets(2,:))+0.1]);
             xlabel('Beam Angle (deg)');
-            ylim([-0.3 0.3]);
-            set(gca,'YTick', -0.3:0.1:0.3);
-            ylabel('MLC Y Offset (cm)');
+            ylim([-3 3]);
+            set(gca,'YTick', -3:0.5:3);
+            ylabel('MLC Y Offset (mm)');
             grid on;
             
             % Turn on display

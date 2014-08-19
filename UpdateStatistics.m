@@ -35,7 +35,7 @@ c = c + 1;
 table{c,1} = 'Minimum Radiation Isocenter Radius';
 if isfield(handles, [head,'radiso']) && ...
         size(handles.([head,'radiso']), 2) == 3
-    table{c,2} = sprintf('%0.2f cm', handles.([head, 'radiso'])(3));
+    table{c,2} = sprintf('%0.2f mm', handles.([head, 'radiso'])(3) * 10);
 end
 
 % Report IEC X offset
@@ -43,7 +43,7 @@ c = c + 1;
 table{c,1} = 'Isocenter IEC X Offset';
 if isfield(handles, [head,'radiso']) && ...
         size(handles.([head,'radiso']), 2) == 3
-    table{c,2} = sprintf('%0.2f cm', handles.([head, 'radiso'])(2));
+    table{c,2} = sprintf('%0.2f mm', handles.([head, 'radiso'])(2) * 10);
 end
 
 % Report IEC Z offset
@@ -128,7 +128,7 @@ if isfield(handles, [head,'frames']) && ...
     end
     
     % Compute average
-    table{c,2} = sprintf('%0.2f cm', mean(offsets));
+    table{c,2} = sprintf('%0.2f mm', mean(offsets) * 10);
 end
 
 % Report IEC Z offset
@@ -136,7 +136,7 @@ c = c + 1;
 table{c,1} = 'Isocenter IEC Z Offset';
 if isfield(handles, [head,'radiso']) && ...
         size(handles.([head,'radiso']), 2) == 3
-    table{c,2} = sprintf('%0.2f cm', handles.([head, 'radiso'])(1));
+    table{c,2} = sprintf('%0.2f mm', handles.([head, 'radiso'])(1) * 10);
 end
 
 % Report average MLC X offset
@@ -158,19 +158,13 @@ if isfield(handles, [head,'alpha']) && ...
             handles.radius);
 
         % Compute disance from line to radiation isocenter
-        r = det([[x(2);y(2)]-[x(1);y(1)], ...
-            [handles.([head,'radiso'])(1); ...
-            handles.([head,'radiso'])(2)]-[x(1);y(1)]])/...
-            abs([x(2);y(2)]-[x(1);y(1)]);
-        if r(1) ~= 0
-            offsets(1,i) = r(1);
-        else
-            offsets(1,i) = r(2);
-        end
+        offsets(1,i) = -((y(2)-y(1)) * handles.([head,'radiso'])(1) ...
+            - (x(2)-x(1)) * handles.([head,'radiso'])(2) - x(1) * ...
+            y(2) + x(2) * y(1)) / sqrt((x(2)-x(1))^2 + (y(2)-y(1))^2);
     end
     
     % Compute average
-    table{c,2} = sprintf('%0.2f cm', mean(offsets));
+    table{c,2} = sprintf('%0.2f mm', mean(offsets) * 10);
 end
 
 % Set table data
