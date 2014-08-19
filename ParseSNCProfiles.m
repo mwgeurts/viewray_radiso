@@ -1,6 +1,6 @@
 function handles = ParseSNCProfiles(handles, head)
-% ParseSNCProfiles extracts the ...
-%
+% ParseSNCProfiles extracts star shot frames from an ArcCheck movie file,
+% and computes the FWHM defined center through the entrance/exit profiles. 
 % While loading each frame, the GUI axes handle is updated to display the
 % frame scaled image. This function is called by ArcCheckRadIso; see the 
 % readme for more information on data acquisition.
@@ -27,6 +27,7 @@ function handles = ParseSNCProfiles(handles, head)
 
 % Check if data exists
 if isfield(handles, [head,'data'])
+    
     % Initialize counters
     c = 0;
     i = 0;
@@ -53,8 +54,8 @@ if isfield(handles, [head,'data'])
         for j = i+1:size(handles.([head,'data']),1)
 
             % If there is a gap in the data
-            if handles.([head,'data'])(j,2) - handles.([head,'data'])(j-1,2) > 2 ...
-                    || j == size(handles.([head,'data']),1)  
+            if handles.([head,'data'])(j,2) - handles.([head,'data'])(j-1,2) ...
+                    > 2 || j == size(handles.([head,'data']),1)  
 
                 % Extract data
                 group(1:1386) = (handles.([head,'data'])(j, 12:1397) - ...
@@ -62,7 +63,7 @@ if isfield(handles, [head,'data'])
                     (handles.([head,'data'])(j,3) - ...
                     handles.([head,'data'])(i,3)) .* ...
                     handles.([head,'bkgd'])(2:1387)) .* ...
-                    handles.([head,'cal'])(2:1387);
+                    handles.([head,'cal'])(2:1387) * handles.([head,'dose']);
 
                 % Jump forward
                 i = j;
@@ -73,12 +74,13 @@ if isfield(handles, [head,'data'])
         % Increment counter
         c = c + 1;
 
-        % Interpolate group data into 2D array of itheta, iY
+        % Generate scattered interpolant object for diode data
         scatter = scatteredInterpolant([handles.([head,'theta'])-360, ...
             handles.([head,'theta']), handles.([head,'theta'])+360]', ...
             [handles.([head,'Y']), handles.([head,'Y']), handles.([head,'Y'])]', ...
             [group, group, group]', 'linear', 'linear');
 
+        % Interpolate group data into 2D array of itheta, iY
         handles.([head,'frames'])(:,:,c) = scatter(handles.itheta, handles.iY);
 
         % Extract center profile
@@ -159,6 +161,17 @@ if isfield(handles, [head,'data'])
         handles.([head,'alpha'])(2,c) = mod((r+l)/2 - ...
             handles.([head,'rotation']),360);
 
+        % If T&G offset correction is enabled, adjust angles
+        if get(handles.([head,'offset']), 'Value') == 1
+           % Decrease entrance angle by arcsin
+           handles.([head,'alpha'])(1,c) = handles.([head,'alpha'])(1,c) ...
+               - asind(handles.tg/handles.radius);
+           
+           % Increase exit angle by arcsin
+           handles.([head,'alpha'])(2,c) = handles.([head,'alpha'])(2,c) ...
+               + asind(handles.tg/handles.radius);
+        end
+        
         % Compute central axis angle (for display)
         if handles.([head,'alpha'])(2,c) < handles.([head,'alpha'])(1,c)
             angle = (handles.([head,'alpha'])(2,c) + ...
@@ -169,7 +182,8 @@ if isfield(handles, [head,'data'])
         end
 
         % Update slider and angle
-        set(handles.([head,'slider']), 'Value', min(c, get(handles.([head,'slider']), 'Max')));
+        set(handles.([head,'slider']), 'Value', ...
+            min(c, get(handles.([head,'slider']), 'Max')));
         set(handles.([head,'angle']), 'String', sprintf('%0.2f', angle));
 
         % Plot map
@@ -184,6 +198,11 @@ if isfield(handles, [head,'data'])
         % Update plot and pause temporarily
         drawnow;
         pause(0.1);
+    end
+    
+    % If less than three frames were found, error 
+    if c < 3
+        error('At least three frames are required to perform the analysis');
     end
     
     % Update slider maximum to actual value

@@ -1,5 +1,7 @@
 function varargout = ArcCheckRadIso(varargin)
-% ArcCheckRadIso ...
+% ArcCheckRadIso computes the radiation isocenter from a series of ViewRay 
+% starshot exposures on a Sun Nuclear ArcCheck diode array.  The exposures  
+% are acquired as a movie file.
 %
 % Author: Mark Geurts, mark.w.geurts@gmail.com
 % Copyright (C) 2014 University of Wisconsin Board of Regents
@@ -17,7 +19,7 @@ function varargout = ArcCheckRadIso(varargin)
 % You should have received a copy of the GNU General Public License along 
 % with this program. If not, see http://www.gnu.org/licenses/.
 
-% Last Modified by GUIDE v2.5 16-Aug-2014 13:20:15
+% Last Modified by GUIDE v2.5 18-Aug-2014 09:50:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -76,8 +78,14 @@ set(handles.h1table, 'Data', cell(4,2));
 set(handles.h2table, 'Data', cell(4,2));
 set(handles.h3table, 'Data', cell(4,2));
 
+% Default offsets to on
+set(handles.h1offset, 'Value', 1);
+set(handles.h2offset, 'Value', 1);
+set(handles.h3offset, 'Value', 1);
+
 % Initialize global variables
 handles.path = userpath;
+handles.tg = 0.03; % cm
 [handles.itheta, handles.iY] = meshgrid(0:359, -10:0.1:10);
 [~, handles.profile] = min(abs(handles.iY(:,1)));
 
@@ -129,6 +137,9 @@ if isfield(handles, 'h1data')
 
     % Compute RADISO
     handles.h1radiso = ComputeRadIso(handles.h1alpha, handles.radius);
+    
+    % Update statistics table
+    handles = UpdateStatistics(handles, 'h1');
 
     % Update plot to show radiation isocenter
     set(handles.h1display, 'Value', 2);
@@ -213,6 +224,7 @@ function h1clear_Callback(hObject, ~, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Clear data
+handles.h1dose = [];
 handles.h1bkgd = [];
 handles.h1cal = [];
 handles.h1rotation = [];
@@ -270,6 +282,9 @@ if isfield(handles, 'h2data')
 
     % Compute RADISO
     handles.h2radiso = ComputeRadIso(handles.h2alpha, handles.radius);
+    
+    % Update statistics table
+    handles = UpdateStatistics(handles, 'h2');
 
     % Update plot to show radiation isocenter
     set(handles.h2display, 'Value', 2);
@@ -354,6 +369,7 @@ function h2clear_Callback(hObject, ~, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Clear data
+handles.h2dose = [];
 handles.h2bkgd = [];
 handles.h2cal = [];
 handles.h2rotation = [];
@@ -411,6 +427,9 @@ if isfield(handles, 'h3data')
 
     % Compute RADISO
     handles.h3radiso = ComputeRadIso(handles.h3alpha, handles.radius);
+    
+    % Update statistics table
+    handles = UpdateStatistics(handles, 'h3');
 
     % Update plot to show radiation isocenter
     set(handles.h3display, 'Value', 2);
@@ -495,6 +514,7 @@ function h3clear_Callback(hObject, ~, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Clear data
+handles.h3dose = [];
 handles.h3bkgd = [];
 handles.h3cal = [];
 handles.h3rotation = [];
@@ -513,6 +533,81 @@ handles = UpdateDisplay(handles, 'h3');
 
 % Set table data
 set(handles.h3table, 'Data', cell(4,2));
+
+% Update handles structure
+guidata(hObject, handles);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function h3offset_Callback(hObject, ~, handles)
+% hObject    handle to h3offset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% If data was loaded, recompute data
+if isfield(handles, 'h3data')
+    % Parse profiles
+    handles = ParseSNCProfiles(handles, 'h3');
+
+    % Compute RADISO
+    handles.h3radiso = ComputeRadIso(handles.h3alpha, handles.radius);
+    
+    % Update statistics table
+    handles = UpdateStatistics(handles, 'h3');
+
+    % Update plot to show radiation isocenter
+    set(handles.h3display, 'Value', 2);
+    handles = UpdateDisplay(handles, 'h3');
+end
+
+% Update handles structure
+guidata(hObject, handles);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function h2offset_Callback(hObject, ~, handles)
+% hObject    handle to h2offset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% If data was loaded, recompute data
+if isfield(handles, 'h2data')
+    % Parse profiles
+    handles = ParseSNCProfiles(handles, 'h2');
+
+    % Compute RADISO
+    handles.h2radiso = ComputeRadIso(handles.h2alpha, handles.radius);
+    
+    % Update statistics table
+    handles = UpdateStatistics(handles, 'h2');
+
+    % Update plot to show radiation isocenter
+    set(handles.h2display, 'Value', 2);
+    handles = UpdateDisplay(handles, 'h2');
+end
+
+% Update handles structure
+guidata(hObject, handles);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function h1offset_Callback(hObject, ~, handles)
+% hObject    handle to h1offset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% If data was loaded, recompute data
+if isfield(handles, 'h1data')
+    % Parse profiles
+    handles = ParseSNCProfiles(handles, 'h1');
+
+    % Compute RADISO
+    handles.h1radiso = ComputeRadIso(handles.h1alpha, handles.radius);
+    
+    % Update statistics table
+    handles = UpdateStatistics(handles, 'h1');
+
+    % Update plot to show radiation isocenter
+    set(handles.h1display, 'Value', 2);
+    handles = UpdateDisplay(handles, 'h1');
+end
 
 % Update handles structure
 guidata(hObject, handles);

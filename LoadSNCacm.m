@@ -43,9 +43,17 @@ if ~name == 0
     while ~feof(fid)
         % Retrieve the next line in the file
         tline = fgetl(fid);
+        
+        % Search for dose calibration
+        [match, nomatch] = regexp(tline, ...
+            sprintf('^Dose Per Count:\t'), 'match', 'split');
+        if size(match,1) > 0
+            % Extract dose per count
+            scan = textscan(nomatch{2}, '%f');
+            handles.([head,'dose']) = scan{1};
+        end
 
         % Search for inclinometer reading and radius
-        % Search for the detector coordinates
         [match, nomatch] = regexp(tline, ...
             sprintf('^Inclinometer Rotation:\t'), 'match', 'split');
         if size(match,1) > 0
@@ -54,7 +62,6 @@ if ~name == 0
             handles.([head,'rotation']) = scan{1};
             handles.radius = scan{4};
         end
-
 
         % Search for the detector Z coordinates
         [match, nomatch] = regexp(tline, ...
