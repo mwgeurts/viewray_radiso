@@ -26,7 +26,7 @@ function handles = ParseSNCProfiles(handles, head)
 % with this program. If not, see http://www.gnu.org/licenses/.
 
 % Check if data exists
-if isfield(handles, [head,'data'])
+if isfield(handles, [head,'data']) && ~isempty(handles.([head,'data'])) > 0
     
     % Initialize counters
     c = 0;
@@ -54,8 +54,9 @@ if isfield(handles, [head,'data'])
         for j = i+1:size(handles.([head,'data']),1)
 
             % If there is a gap in the data
-            if handles.([head,'data'])(j,2) - handles.([head,'data'])(j-1,2) ...
-                    > 2 || j == size(handles.([head,'data']),1)  
+            if j == size(handles.([head,'data']),1) || ...
+                    abs(handles.([head,'data'])(j+1,2) - ...
+                    handles.([head,'data'])(j,2)) > 2 
 
                 % Extract data
                 group(1:1386) = (handles.([head,'data'])(j, 12:1397) - ...
@@ -67,7 +68,7 @@ if isfield(handles, [head,'data'])
 
                 % Jump forward
                 i = j;
-                break;
+                break;      
             end
         end
 
@@ -198,6 +199,11 @@ if isfield(handles, [head,'data'])
         % Update plot and pause temporarily
         drawnow;
         pause(0.1);
+        
+        % Temporary workaround to remove angles through couch
+        if round(angle) == 130 || round(angle) == 230
+           c = c - 1; 
+        end
     end
     
     % If less than three frames were found, error 

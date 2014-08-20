@@ -121,7 +121,7 @@ switch get(handles.([head, 'display']),'Value')
             hold on;
 
             % Initialize legend text
-            legends = cell(1,size(handles.([head, 'alpha']),2)+1);
+            legends = cell(1, size(handles.([head, 'alpha']),2)+1);
             
             % Plot isocenter
             [x, y] = pol2cart(linspace(0,2*pi,100), ...
@@ -136,7 +136,7 @@ switch get(handles.([head, 'display']),'Value')
             for i = 1:size(handles.([head, 'alpha']),2)
                 [x, y]  = pol2cart(handles.([head, 'alpha'])(:,i)*pi/180, ...
                     handles.radius);
-                plot(y * 10, x * 10, '-', 'Color', cmap(i,:));
+                plot(y * 10, x * 10, '-', 'Color', cmap(min(i,size(cmap,1)),:));
                 
                 % Compute central axis angle (for display)
                 if handles.([head,'alpha'])(2,i) < handles.([head,'alpha'])(1,i)
@@ -150,8 +150,10 @@ switch get(handles.([head, 'display']),'Value')
                 legends{i+1} = sprintf('%0.1f', angle);
             end
 
-            legend(legends);
-
+            if length(legends) < 22
+                legend(legends);
+            end
+            
             xlabel('IEC X Axis (mm)');
             ylabel('IEC Z Axis (mm)');
 

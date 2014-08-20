@@ -131,7 +131,7 @@ function h1browse_Callback(hObject, ~, handles)
 handles = LoadSNCacm(handles, 'h1');
 
 % If data was loaded
-if isfield(handles, 'h1data')
+if isfield(handles, 'h1data') && ~isempty(handles.h1data) > 0
     % Parse profiles
     handles = ParseSNCProfiles(handles, 'h1');
 
@@ -276,7 +276,7 @@ function h2browse_Callback(hObject, ~, handles)
 handles = LoadSNCacm(handles, 'h2');
 
 % If data was loaded
-if isfield(handles, 'h2data')
+if isfield(handles, 'h2data') && ~isempty(handles.h2data) > 0
     % Parse profiles
     handles = ParseSNCProfiles(handles, 'h2');
 
@@ -421,7 +421,7 @@ function h3browse_Callback(hObject, ~, handles)
 handles = LoadSNCacm(handles, 'h3');
 
 % If data was loaded
-if isfield(handles, 'h3data')
+if isfield(handles, 'h3data') && ~isempty(handles.h3data) > 0
     % Parse profiles
     handles = ParseSNCProfiles(handles, 'h3');
 

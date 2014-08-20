@@ -35,6 +35,14 @@ circles = zeros(size(alpha,2), 3);
 
 % Loop through each triplet
 for i = 1:size(triplets,1)
+    % Check if alpha points are within 1 deg of each other; if so, skip
+    % this triplet (necessary for combination analysis)
+    if round(alpha(1,triplets(i,1))) == round(alpha(1,triplets(i,2))) || ...
+            round(alpha(1,triplets(i,1))) == round(alpha(1,triplets(i,3))) || ...
+            round(alpha(1,triplets(i,2))) == round(alpha(1,triplets(i,3)))
+        continue;
+    end
+    
     % Convert alpha points to cartesian space
     [x1, y1]  = pol2cart(alpha(:,triplets(i,1))*pi/180, radius);
     [x2, y2]  = pol2cart(alpha(:,triplets(i,2))*pi/180, radius);
