@@ -337,84 +337,21 @@ switch get(handles.([head, 'display']),'Value')
         set(handles.([head, 'angle']), 'String', '');
         set(handles.([head, 'angle']), 'enable', 'off');
         
-        % If data exists
-        if isfield(handles, [head,'frames']) && ...
-                size(handles.([head,'frames']), 1) > 0 && ...
-                size(handles.([head,'frames']), 3) >= c
+        if isfield(handles, [head,'alpha']) && ...
+                size(handles.([head,'alpha']), 2) > 0 && ...
+                isfield(handles, [head,'beta']) && ...
+                size(handles.([head,'beta']), 2) > 0
             
             % Initialize offset array
-            offsets = zeros(2, size(handles.([head,'frames']), 3));
+            offsets = zeros(2, size(handles.([head,'alpha']), 2));
             
-            % Loop through frames
-            for i = 1:size(handles.([head,'frames']), 3)
-                
-                % Extract circumferential profile
-                profile = handles.([head,'frames'])(handles.profile,:,i);
-            
-                % Determine location of maximum
-                [~, I] = max(profile);
-
-                % Circshift to center maximum
-                profile = circshift(profile, floor(size(profile,2)/2)-I, 2);
-                frame = squeeze(circshift(handles.([head,'frames'])(:,:,i), ...
-                    floor(size(profile,2)/2)-I, 2));
-
-                % Redetermine location and value of maximum
-                [C, I] = max(profile);
-
-                % Search left side for half-maximum value
-                for j = I:-1:1
-                    if profile(j) == C/2
-                        l = j;
-                        break;
-                    elseif profile(j) < C/2 && profile(j+1) > C/2
-                        l = interp1(profile(j:j+1), j:j+1, C/2, 'linear');
-                        break;
-                    end
-                end
-
-                % Search right side for half-maximum value
-                for j = I:size(profile,2)-1
-                    if profile(j) == C/2
-                        r = j;
-                        break;
-                    elseif profile(j) > C/2 && profile(j+1) < C/2
-                        r = interp1(profile(j:j+1), j:j+1, C/2, 'linear');
-                        break;
-                    end
-                end 
-            
-                % Interpolate longitudinal profile
-                long = interp1(1:size(frame,2), frame(:,:)', (r+l)/2);
-            
-                % Determine location and value of longitudinal maximum
-                [C, I] = max(long);
-                
-                % Search left side for half-maximum value
-                for j = I:-1:1
-                    if long(j) == C/2
-                        l = handles.iY(j);
-                        break;
-                    elseif long(j) < C/2 && long(j+1) > C/2
-                        l = interp1(long(j:j+1), handles.iY(j:j+1), C/2, 'linear');
-                        break;
-                    end
-                end
-
-                % Search right side for half-maximum value
-                for j = I:size(long,2)-1
-                    if long(j) == C/2
-                        r = handles.iY(j);
-                        break;
-                    elseif long(j) > C/2 && long(j+1) < C/2
-                        r = interp1(long(j:j+1), handles.iY(j:j+1), C/2, 'linear');
-                        break;
-                    end
-                end
+            % Loop through angles
+            for i = 1:size(handles.([head,'alpha']), 2)
                 
                 % Store field center
-                offsets(1,i) = (r+l)/2;
-                
+                offsets(1,i) = (handles.([head,'beta'])(1,i) + ...
+                    handles.([head,'beta'])(2,i)) / 2;
+
                 % Compute central axis angle
                 if handles.([head,'alpha'])(2,i) < handles.([head,'alpha'])(1,i)
                     offsets(2,i) = (handles.([head,'alpha'])(2,i) + ...
@@ -424,7 +361,7 @@ switch get(handles.([head, 'display']),'Value')
                         handles.([head,'alpha'])(1,i)-180)/2;
                 end
             end
-            
+
             % Plot map
             h = plot(offsets(2,:), offsets(1,:) * 10, 'o');
             set(h,'MarkerEdgeColor','b','MarkerFaceColor','b')

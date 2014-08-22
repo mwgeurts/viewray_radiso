@@ -93,7 +93,9 @@ if isfield(handles, [head,'data']) && ~isempty(handles.([head,'data'])) > 0
         % Circshift to center maximum
         profile = circshift(profile, floor(size(profile,2)/2)-I, 2);
         itheta = circshift(handles.itheta, floor(size(profile,2)/2)-I, 2);
-
+        frame = squeeze(circshift(handles.([head,'frames'])(:,:,c), ...
+            floor(size(profile,2)/2)-I, 2));
+        
         % Redetermine location and value of maximum
         [C, I] = max(profile);
 
@@ -101,9 +103,11 @@ if isfield(handles, [head,'data']) && ~isempty(handles.([head,'data'])) > 0
         for j = I:-1:1
             if profile(j) == C/2
                 l = itheta(1,j);
+                li = j;
                 break;
             elseif profile(j) < C/2 && profile(j+1) > C/2
                 l = interp1(profile(j:j+1), itheta(1,j:j+1), C/2, 'linear');
+                li = interp1(profile(j:j+1), j:j+1, C/2, 'linear');
                 break;
             end
         end
@@ -112,9 +116,11 @@ if isfield(handles, [head,'data']) && ~isempty(handles.([head,'data'])) > 0
         for j = I:size(profile,2)-1
             if profile(j) == C/2
                 r = itheta(1,j);
+                ri = j;
                 break;
             elseif profile(j) > C/2 && profile(j+1) < C/2
                 r = interp1(profile(j:j+1), itheta(1,j:j+1), C/2, 'linear');
+                ri = interp1(profile(j:j+1), j:j+1, C/2, 'linear');
                 break;
             end
         end 
@@ -124,12 +130,46 @@ if isfield(handles, [head,'data']) && ~isempty(handles.([head,'data'])) > 0
         handles.([head,'alpha'])(1,c) = mod((r+l)/2 - ...
             handles.([head,'rotation']),360); %#ok<*SAGROW>
 
+        
+        % Interpolate longitudinal profile
+        long = interp1(1:size(frame,2), frame(:,:)', (ri+li)/2);
+        
+        % Determine location and value of longitudinal maximum
+        [C, I] = max(long);
+
+        % Search left side for half-maximum value
+        for j = I:-1:1
+            if long(j) == C/2
+                l = handles.iY(j);
+                break;
+            elseif long(j) < C/2 && long(j+1) > C/2
+                l = interp1(long(j:j+1), handles.iY(j:j+1), C/2, 'linear');
+                break;
+            end
+        end
+
+        % Search right side for half-maximum value
+        for j = I:size(long,2)-1
+            if long(j) == C/2
+                r = handles.iY(j);
+                break;
+            elseif long(j) > C/2 && long(j+1) < C/2
+                r = interp1(long(j:j+1), handles.iY(j:j+1), C/2, 'linear');
+                break;
+            end
+        end
+
+        % Store field center
+        handles.([head,'beta'])(1,c) = (r+l)/2;
+        
         % Circshift to center the exit profile
         profile = circshift(profile, itheta(1,1) - ...
             floor(handles.([head,'alpha'])(1,c)), 2);
         itheta = circshift(itheta, itheta(1,1) - ...
             floor(handles.([head,'alpha'])(1,c)), 2);
-
+        frame = squeeze(circshift(frame, itheta(1,1) - ...
+            floor(handles.([head,'alpha'])(1,c)), 2));
+        
         % Determine location and value of maximum
         [C, I] = max(profile(floor(size(profile,2)/4):...
             floor(size(profile,2)*3/4)));
@@ -139,9 +179,11 @@ if isfield(handles, [head,'data']) && ~isempty(handles.([head,'data'])) > 0
         for j = I:-1:1
             if profile(j) == C/2
                 l = itheta(1,j);
+                li = j;
                 break;
             elseif profile(j) < C/2 && profile(j+1) > C/2
                 l = interp1(profile(j:j+1), itheta(1,j:j+1), C/2, 'linear');
+                li = interp1(profile(j:j+1), j:j+1, C/2, 'linear');
                 break;
             end
         end
@@ -150,9 +192,11 @@ if isfield(handles, [head,'data']) && ~isempty(handles.([head,'data'])) > 0
         for j = I:size(profile,2)-1
             if profile(j) == C/2
                 r = itheta(1,j);
+                ri = j;
                 break;
             elseif profile(j) > C/2 && profile(j+1) < C/2
                 r = interp1(profile(j:j+1), itheta(1,j:j+1), C/2, 'linear');
+                ri = interp1(profile(j:j+1), j:j+1, C/2, 'linear');
                 break;
             end
         end 
@@ -162,6 +206,37 @@ if isfield(handles, [head,'data']) && ~isempty(handles.([head,'data'])) > 0
         handles.([head,'alpha'])(2,c) = mod((r+l)/2 - ...
             handles.([head,'rotation']),360);
 
+        % Interpolate longitudinal profile
+        long = interp1(1:size(frame,2), frame(:,:)', (ri+li)/2);
+        
+        % Determine location and value of longitudinal maximum
+        [C, I] = max(long);
+
+        % Search left side for half-maximum value
+        for j = I:-1:1
+            if long(j) == C/2
+                l = handles.iY(j);
+                break;
+            elseif long(j) < C/2 && long(j+1) > C/2
+                l = interp1(long(j:j+1), handles.iY(j:j+1), C/2, 'linear');
+                break;
+            end
+        end
+
+        % Search right side for half-maximum value
+        for j = I:size(long,2)-1
+            if long(j) == C/2
+                r = handles.iY(j);
+                break;
+            elseif long(j) > C/2 && long(j+1) < C/2
+                r = interp1(long(j:j+1), handles.iY(j:j+1), C/2, 'linear');
+                break;
+            end
+        end
+
+        % Store field center
+        handles.([head,'beta'])(2,c) = (r+l)/2;
+        
         % If T&G offset correction is enabled, adjust angles
         if get(handles.([head,'offset']), 'Value') == 1
            % Decrease entrance angle by arcsin

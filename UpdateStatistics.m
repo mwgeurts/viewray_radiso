@@ -49,86 +49,11 @@ end
 % Report IEC Z offset
 c = c + 1;
 table{c,1} = 'Isocenter IEC Y Offset';
-if isfield(handles, [head,'frames']) && ...
-        size(handles.([head,'frames']), 1) > 0 && ...
-        size(handles.([head,'frames']), 3) >= c
-
-    % Initialize offset array
-    offsets = zeros(1, size(handles.([head,'frames']), 3));
-
-    % Loop through frames
-    for i = 1:size(handles.([head,'frames']), 3)
-
-        % Extract circumferential profile
-        profile = handles.([head,'frames'])(handles.profile,:,i);
-
-        % Determine location of maximum
-        [~, I] = max(profile);
-
-        % Circshift to center maximum
-        profile = circshift(profile, floor(size(profile,2)/2)-I, 2);
-        frame = squeeze(circshift(handles.([head,'frames'])(:,:,i), ...
-            floor(size(profile,2)/2)-I, 2));
-
-        % Redetermine location and value of maximum
-        [C, I] = max(profile);
-
-        % Search left side for half-maximum value
-        for j = I:-1:1
-            if profile(j) == C/2
-                l = j;
-                break;
-            elseif profile(j) < C/2 && profile(j+1) > C/2
-                l = interp1(profile(j:j+1), j:j+1, C/2, 'linear');
-                break;
-            end
-        end
-
-        % Search right side for half-maximum value
-        for j = I:size(profile,2)-1
-            if profile(j) == C/2
-                r = j;
-                break;
-            elseif profile(j) > C/2 && profile(j+1) < C/2
-                r = interp1(profile(j:j+1), j:j+1, C/2, 'linear');
-                break;
-            end
-        end 
-
-        % Interpolate longitudinal profile
-        long = interp1(1:size(frame,2), frame(:,:)', (r+l)/2);
-
-        % Determine location and value of longitudinal maximum
-        [C, I] = max(long);
-
-        % Search left side for half-maximum value
-        for j = I:-1:1
-            if long(j) == C/2
-                l = handles.iY(j);
-                break;
-            elseif long(j) < C/2 && long(j+1) > C/2
-                l = interp1(long(j:j+1), handles.iY(j:j+1), C/2, 'linear');
-                break;
-            end
-        end
-
-        % Search right side for half-maximum value
-        for j = I:size(long,2)-1
-            if long(j) == C/2
-                r = handles.iY(j);
-                break;
-            elseif long(j) > C/2 && long(j+1) < C/2
-                r = interp1(long(j:j+1), handles.iY(j:j+1), C/2, 'linear');
-                break;
-            end
-        end
-
-        % Store field center
-        offsets(1,i) = (r+l)/2;
-    end
+if isfield(handles, [head,'beta']) && ...
+        size(handles.([head,'beta']), 2) > 0
     
     % Compute average
-    table{c,2} = sprintf('%0.2f mm', mean(offsets) * 10);
+    table{c,2} = sprintf('%0.2f mm', mean(handles.([head,'beta'])(1,:)) * 10);
 end
 
 % Report IEC Z offset
