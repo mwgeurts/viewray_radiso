@@ -1,4 +1,7 @@
 viewray_radiso
 ==============
 
-ArcCHECK based radiation isocenter analysis for ViewRay systems
+by Mark Geurts <mark.w.geurts@gmail.com>
+<br>Copyright &copy; 2014, University of Wisconsin Board of Regents
+
+README coming soon!
