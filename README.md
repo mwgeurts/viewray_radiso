@@ -1,4 +1,4 @@
-viewray_radiso
+ViewRay Radiation Isocenter Verification
 ==============
 
 by Mark Geurts <mark.w.geurts@gmail.com>
