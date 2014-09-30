@@ -203,8 +203,7 @@ if isfield(handles, [head,'data']) && ~isempty(handles.([head,'data'])) > 0
 
         % Compute angle as average of r and l thetas
         if (r < l); r = r + 360; end
-        handles.([head,'alpha'])(2,c) = mod((r+l)/2 - ...
-            handles.([head,'rotation']),360);
+        handles.([head,'alpha'])(2,c) = mod((r+l)/2, 360);
 
         % Interpolate longitudinal profile
         long = interp1(1:size(frame,2), frame(:,:)', (ri+li)/2);
