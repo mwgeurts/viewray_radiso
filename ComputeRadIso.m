@@ -1,8 +1,9 @@
-function radiso = ComputeRadIso(alpha, radius)
-% ComputeRadIso computes the minimum radius and position of a circle that 
+function radiso = ComputeRadIso(alpha, beta, radius)
+% ComputeRadIso computes the minimum radius and position of a sphere that 
 % intersects all rays.  The n rays are defined by two points in cylindrical 
-% coordinates; the first input argument is a 2 x n array of angles, while
-% the second is the radius.
+% coordinates; the first input argument is a 2 x n array of angles, the 
+% second is a 2 x n array of entrance and exit IEC-Y locations, and the
+% third is the radius.
 %
 % The algorithm used to determine the minimum radius is detailed in Depuydt
 % et al, Computer-aided analysis of star shot films for high-accuracy 
@@ -31,7 +32,7 @@ function radiso = ComputeRadIso(alpha, radius)
 triplets = nchoosek(1:size(alpha,2), 3);
 
 % Initialize array of circle positions and radii
-circles = zeros(size(alpha,2), 3);
+spheres = zeros(size(alpha,2), 3);
 
 % Loop through each triplet
 for i = 1:size(triplets,1)
@@ -44,9 +45,9 @@ for i = 1:size(triplets,1)
     end
     
     % Convert alpha points to cartesian space
-    [x1, y1]  = pol2cart(alpha(:,triplets(i,1))*pi/180, radius);
-    [x2, y2]  = pol2cart(alpha(:,triplets(i,2))*pi/180, radius);
-    [x3, y3]  = pol2cart(alpha(:,triplets(i,3))*pi/180, radius);
+    [x1, y1]  = pol2cart(alpha(:,triplets(i,1)) * pi/180, radius);
+    [x2, y2]  = pol2cart(alpha(:,triplets(i,2)) * pi/180, radius);
+    [x3, y3]  = pol2cart(alpha(:,triplets(i,3)) * pi/180, radius);
     
     % Compute intersection of triplet rays 1 and 2
     p1 = polyfit(x1,y1,1);
@@ -60,12 +61,11 @@ for i = 1:size(triplets,1)
     x13 = fzero(@(x) polyval(p1-p2,x),3);
     y13 = polyval(p1,x13);
     
-    % Compute intersection of triplet 1 and 2
+    % Compute intersection of triplet 2 and 3
     p1 = polyfit(x2,y2,1);
     p2 = polyfit(x3,y3,1);
     x23 = fzero(@(x) polyval(p1-p2,x),3);
     y23 = polyval(p1,x23);
-    
    
     % Create triangulation object given intersection points
     DT = delaunayTriangulation([x12; x13; x23], [y12; y13; y23]);
@@ -73,38 +73,45 @@ for i = 1:size(triplets,1)
     % Compute incenter and radius
     [IC, r] = incenter(DT);
     if ~isempty(IC)
-        circles(i,1:2) = IC;
-        circles(i,3) = r;
+        spheres(i, 1:2) = IC;
+        spheres(i, 3) = mean(mean([beta(:, triplets(i,1)), ...
+            beta(:, triplets(i,2)), beta(:, triplets(i,3))]));
+        spheres(i, 4) = r;
     end
 end
 
 %% Find smallest circle intersecting all rays
 % Sort circles by radius ascending
-circles = sortrows(circles,3);
+spheres = sortrows(spheres, 4);
 
 % Loop through each circle, starting at the smallest
-for i = 1:size(circles,1)
+for i = 1:size(spheres, 1)
     
     % If the radius is greater than zero
-    if circles(i,3) > 0
+    if spheres(i, 4) > 0
         
         % Initialize flag
         flag = true;
         
         % Loop through each ray
-        for j = 1:size(alpha,2)
+        for j = 1:size(alpha, 2)
             
             % Convert alpha points to cartesian space
-            [x, y]  = pol2cart(alpha(:,j)*pi/180, radius);
+            [x, y]  = pol2cart(alpha(:,j) * pi/180, radius);
+            z = beta(:,j);
             
-            % Compute intersection
-            [xc, ~] = linecirc((y(2)-y(1))/(x(2)-x(1)), ...
-                y(2)-(y(2)-y(1))/(x(2)-x(1))*x(2), circles(i,1), ...
-                circles(i,2), circles(i,3)+1e-6);
+            % Compute intersection parameters
+            a = (x(2) - x(1))^2 + (y(2) - y(1))^2 + (z(2) - z(1))^2;
+            b = 2 * ((x(2) - x(1)) * (x(1) - spheres(i,1)) + ...
+                (y(2) - y(1)) * (y(1) - spheres(i,2)) + ...
+                (z(2) - z(1)) * (z(1) - spheres(i,3)));
+            c = spheres(i,1)^2 + spheres(i,2)^2 + spheres(i,3)^2 + ...
+                x(1)^2 + y(1)^2 + z(1)^2 - 2 * (spheres(i,1) * x(1) + ...
+                spheres(i,2) * y(1) + spheres(i,3) * z(1)) - spheres(i,4)^2;
             
             % If the ray did not intersect with the circle
-            if isnan(xc(1))
-                
+            if (b^2 - 4 * a * c) < 1e-6
+            
                 % Set the flag to false and break the loop
                 flag = false;
                 break;
@@ -115,7 +122,7 @@ for i = 1:size(circles,1)
         if flag
             
             % Set radiation isocenter to the smallest circle
-            radiso = circles(i,:);
+            radiso(1) = spheres(i,1);
             
             % Exit the circle loop, as the smallest circle was found
             break;
@@ -123,6 +130,10 @@ for i = 1:size(circles,1)
     end 
 end
 
+% Clear temporary variables
+clear x y z a b c flag spheres triplets;
+
+% If no circle was not found
 if ~exist('radiso', 'var')
-    radiso = circles(size(circles,1),:);
+    Event('A minimum intersecting circle was not found', 'ERROR');
 end

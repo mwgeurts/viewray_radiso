@@ -136,7 +136,8 @@ if isfield(handles, 'h1data') && ~isempty(handles.h1data) > 0
     handles = ParseSNCProfiles(handles, 'h1');
 
     % Compute RADISO
-    handles.h1radiso = ComputeRadIso(handles.h1alpha, handles.radius);
+    handles.h1radiso = ...
+        ComputeRadIso(handles.h1alpha, handles.h1beta, handles.radius);
     
     % Update statistics table
     handles = UpdateStatistics(handles, 'h1');
@@ -281,7 +282,8 @@ if isfield(handles, 'h2data') && ~isempty(handles.h2data) > 0
     handles = ParseSNCProfiles(handles, 'h2');
 
     % Compute RADISO
-    handles.h2radiso = ComputeRadIso(handles.h2alpha, handles.radius);
+    handles.h2radiso = ...
+        ComputeRadIso(handles.h2alpha, handles.h2beta, handles.radius);
     
     % Update statistics table
     handles = UpdateStatistics(handles, 'h2');
@@ -426,7 +428,8 @@ if isfield(handles, 'h3data') && ~isempty(handles.h3data) > 0
     handles = ParseSNCProfiles(handles, 'h3');
 
     % Compute RADISO
-    handles.h3radiso = ComputeRadIso(handles.h3alpha, handles.radius);
+    handles.h3radiso = ...
+        ComputeRadIso(handles.h3alpha, handles.h3beta, handles.radius);
     
     % Update statistics table
     handles = UpdateStatistics(handles, 'h3');
