@@ -24,6 +24,9 @@ function varargout = UpdateDisplay(varargin)
 % You should have received a copy of the GNU General Public License along 
 % with this program. If not, see http://www.gnu.org/licenses/.
 
+% Run in try-catch to log error via Event.m
+try
+    
 % Specify plot options and order
 plotoptions = {
     ''
@@ -47,15 +50,20 @@ if nargin == 0
 elseif nargin == 2
     handles = varargin{1};
     head = varargin{2};
+    
+    % Log start
+    Event('Updating plot display');
+    tic;
 
 % Otherwise, throw an error
 else 
-    error('Incorrect number of inputs');
+    Event('Incorrect number of inputs passed to UpdateDisplay', 'ERROR');
 end
 
 % Clear and set reference to axis
 cla(handles.([head, 'axes']), 'reset');
 axes(handles.([head, 'axes']));
+Event(['Current plot set to ', head, 'axes']);
 
 % Turn off the display while building
 set(allchild(handles.([head, 'axes'])), 'visible', 'off'); 
@@ -69,7 +77,11 @@ c = round(get(handles.([head,'slider']), 'Value'));
 
 % Execute code block based on display GUI item value
 switch get(handles.([head, 'display']),'Value')
+    % Measured data (frames)
     case 2
+        % Log selection
+        Event('Measured Data selected for display');
+        
         % If data exists
         if isfield(handles, [head,'frames']) && ...
                 size(handles.([head,'frames']), 1) > 0 && ...
@@ -107,7 +119,12 @@ switch get(handles.([head, 'display']),'Value')
             set(handles.([head, 'slider']), 'enable', 'off');
             set(handles.([head, 'angle']), 'enable', 'off');
         end
+        
+    % Radiation isocenter    
     case 3
+        % Log selection
+        Event('Radiation Isocenter selected for display');
+        
         % Define square voxels
         axis image;
         
@@ -117,8 +134,10 @@ switch get(handles.([head, 'display']),'Value')
         set(handles.([head, 'angle']), 'enable', 'off');
         
         % If data exists
-        if isfield(handles, [head,'radiso']) && ...
-                size(handles.([head,'radiso']), 2) == 3
+        if isfield(handles, [head,'isoradius']) && ...
+                handles.([head,'isoradius']) > 0 && ...
+                isfield(handles, [head,'isocenter']) && ...
+                size(handles.([head,'isocenter']), 2) >= 2
             hold on;
 
             % Initialize legend text
@@ -126,12 +145,12 @@ switch get(handles.([head, 'display']),'Value')
             
             % Plot isocenter
             [x, y] = pol2cart(linspace(0,2*pi,100), ...
-                handles.([head, 'radiso'])(3));
-            x = x + handles.([head, 'radiso'])(1);
-            y = y + handles.([head, 'radiso'])(2);
+                handles.([head, 'isoradius']));
+            x = x + handles.([head, 'isocenter'])(1);
+            y = y + handles.([head, 'isocenter'])(2);
             plot(y * 10, x * 10, '-r','LineWidth',2);
             legends{1} = sprintf('%0.2f mm', ...
-                handles.([head, 'radiso'])(3) * 10);
+                handles.([head, 'isoradius']) * 10);
             
             % Plot field centers
             for i = 1:size(handles.([head, 'alpha']),2)
@@ -153,11 +172,14 @@ switch get(handles.([head, 'display']),'Value')
 
             if length(legends) < 22
                 legend(legends);
+                Event('Legend not displayed as over 21 frames were analyzed');
             end
             
+            % Set axis labels
             xlabel('IEC X Axis (mm)');
             ylabel('IEC Z Axis (mm)');
 
+            % Set plot options
             xlim([-5 5]);
             set(gca,'XTick',-5:1:5);
             ylim([-5 5]);
@@ -170,7 +192,12 @@ switch get(handles.([head, 'display']),'Value')
             set(handles.([head, 'axes']), 'visible', 'on'); 
             zoom on;
         end
+        
+    % Circumferential profiles    
     case 4
+        % Log selection
+        Event('Circumferential Profiles selected for display');
+        
         % If data exists
         if isfield(handles, [head,'frames']) && ...
                 size(handles.([head,'frames']), 1) > 0 && ...
@@ -207,7 +234,12 @@ switch get(handles.([head, 'display']),'Value')
             set(handles.([head, 'axes']), 'visible', 'on'); 
             zoom on;
         end
+        
+    % Longitudinal profiles    
     case 5
+        % Log selection
+        Event('Longitudinal Profiles selected for display');
+        
         % If data exists
         if isfield(handles, [head,'frames']) && ...
                 size(handles.([head,'frames']), 1) > 0 && ...
@@ -280,7 +312,12 @@ switch get(handles.([head, 'display']),'Value')
             set(handles.([head, 'axes']), 'visible', 'on'); 
             zoom on;
         end
+        
+    % MLC X Offsets    
     case 6
+        % Log selection
+        Event('MLC X Offsets selected for display');
+        
         % Disable slider
         set(handles.([head, 'slider']), 'enable', 'off');
         set(handles.([head, 'angle']), 'String', '');
@@ -289,8 +326,8 @@ switch get(handles.([head, 'display']),'Value')
         % If data exists
         if isfield(handles, [head,'alpha']) && ...
                 size(handles.([head,'alpha']), 2) > 0 && ...
-                isfield(handles, [head,'radiso']) && ...
-                size(handles.([head,'radiso']), 2) == 3
+                isfield(handles, [head,'isocenter']) && ...
+                size(handles.([head,'isocenter']), 2) >= 2
             
             % Initialize offset array
             offsets = zeros(2, size(handles.([head,'alpha']), 2));
@@ -303,8 +340,8 @@ switch get(handles.([head, 'display']),'Value')
                     handles.radius);
         
                 % Compute disance from line to radiation isocenter
-                offsets(1,i) = -((y(2)-y(1)) * handles.([head,'radiso'])(1) ...
-                    - (x(2)-x(1)) * handles.([head,'radiso'])(2) - x(1) * ...
+                offsets(1,i) = -((y(2)-y(1)) * handles.([head,'isocenter'])(1) ...
+                    - (x(2)-x(1)) * handles.([head,'isocenter'])(2) - x(1) * ...
                     y(2) + x(2) * y(1)) / sqrt((x(2)-x(1))^2 + (y(2)-y(1))^2);
 
                 % Compute central axis angle (for display)
@@ -332,16 +369,24 @@ switch get(handles.([head, 'display']),'Value')
             set(handles.([head, 'axes']), 'visible', 'on'); 
             zoom on;
         end
+    
+    % MLC Y Offsets    
     case 7
+        % Log selection
+        Event('MLC Y Offsets selected for display');
+        
         % Disable slider
         set(handles.([head, 'slider']), 'enable', 'off');
         set(handles.([head, 'angle']), 'String', '');
         set(handles.([head, 'angle']), 'enable', 'off');
         
+        % If data exists
         if isfield(handles, [head,'alpha']) && ...
                 size(handles.([head,'alpha']), 2) > 0 && ...
                 isfield(handles, [head,'beta']) && ...
-                size(handles.([head,'beta']), 2) > 0
+                size(handles.([head,'beta']), 2) > 0 && ...
+                isfield(handles, [head,'isocenter']) && ...
+                size(handles.([head,'isocenter']), 2) == 3
             
             % Initialize offset array
             offsets = zeros(2, size(handles.([head,'alpha']), 2));
@@ -349,9 +394,10 @@ switch get(handles.([head, 'display']),'Value')
             % Loop through angles
             for i = 1:size(handles.([head,'alpha']), 2)
                 
-                % Store field center
+                % Store field center minus IEC Y isocenter 
                 offsets(1,i) = (handles.([head,'beta'])(1,i) + ...
-                    handles.([head,'beta'])(2,i)) / 2;
+                    handles.([head,'beta'])(2,i)) / 2 - ...
+                    handles.([head,'isocenter'])(3);
 
                 % Compute central axis angle
                 if handles.([head,'alpha'])(2,i) < handles.([head,'alpha'])(1,i)
@@ -380,5 +426,13 @@ switch get(handles.([head, 'display']),'Value')
         end
 end
 
+% Log completion
+Event(sprintf('Plot updated successfully in %0.3f seconds', toc));
+
 % Return the modified handles
 varargout{1} = handles; 
+
+% Catch errors, log, and rethrow
+catch err
+    Event(getReport(err, 'extended', 'hyperlinks', 'off'), 'ERROR');
+end

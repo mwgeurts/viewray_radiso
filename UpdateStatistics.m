@@ -24,6 +24,13 @@ function handles = UpdateStatistics(handles, head)
 % You should have received a copy of the GNU General Public License along 
 % with this program. If not, see http://www.gnu.org/licenses/.
 
+% Run in try-catch to log error via Event.m
+try
+
+% Log start
+Event(['Updating ', head, 'table statistics']);
+tic;
+
 % Load table data cell array
 table = get(handles.([head, 'table']), 'Data');
 
@@ -33,44 +40,45 @@ c = 0;
 % Report radiation isocenter
 c = c + 1;
 table{c,1} = 'Minimum Radiation Isocenter Radius';
-if isfield(handles, [head,'radiso']) && ...
-        size(handles.([head,'radiso']), 2) == 3
-    table{c,2} = sprintf('%0.2f mm', handles.([head, 'radiso'])(3) * 10);
+if isfield(handles, [head,'isoradius'])
+    table{c,2} = sprintf('%0.2f mm', handles.([head, 'isoradius']) * 10);
 end
 
 % Report IEC X offset
 c = c + 1;
 table{c,1} = 'Isocenter IEC X Offset';
-if isfield(handles, [head,'radiso']) && ...
-        size(handles.([head,'radiso']), 2) == 3
-    table{c,2} = sprintf('%0.2f mm', handles.([head, 'radiso'])(2) * 10);
+if isfield(handles, [head,'isocenter']) && ...
+        size(handles.([head,'isocenter']), 2) >= 2
+    table{c,2} = sprintf('%0.2f mm', handles.([head, 'isocenter'])(2) * 10);
 end
 
-% Report IEC Z offset
+% Report IEC Y offset
 c = c + 1;
 table{c,1} = 'Isocenter IEC Y Offset';
-if isfield(handles, [head,'beta']) && ...
-        size(handles.([head,'beta']), 2) > 0
+
+% If 3D was computed
+if isfield(handles, [head,'isocenter']) && ...
+        size(handles.([head,'isocenter']), 2) == 3
+    table{c,2} = sprintf('%0.2f mm', handles.([head, 'isocenter'])(3) * 10);
     
-    % Compute average
-    table{c,2} = sprintf('%0.2f mm', mean(handles.([head,'beta'])(1,:)) * 10);
+% Otherwise, if 2D was computed
+elseif size(handles.([head,'isocenter']), 2) == 2
+    table{c,2} = 'N/A';
 end
 
 % Report IEC Z offset
 c = c + 1;
 table{c,1} = 'Isocenter IEC Z Offset';
-if isfield(handles, [head,'radiso']) && ...
-        size(handles.([head,'radiso']), 2) == 3
-    table{c,2} = sprintf('%0.2f mm', handles.([head, 'radiso'])(1) * 10);
+if isfield(handles, [head,'isocenter']) && ...
+        size(handles.([head,'isocenter']), 2) >= 2
+    table{c,2} = sprintf('%0.2f mm', handles.([head, 'isocenter'])(1) * 10);
 end
 
-% Report average MLC X offset
-c = c + 1;
-table{c,1} = 'Mean MLC X Offset';
+% Report average/max/min MLC X offset
 if isfield(handles, [head,'alpha']) && ...
         size(handles.([head,'alpha']), 2) > 0 && ...
-        isfield(handles, [head,'radiso']) && ...
-        size(handles.([head,'radiso']), 2) == 3
+        isfield(handles, [head,'isocenter']) && ...
+        size(handles.([head,'isocenter']), 2) >= 2
 
     % Initialize offset array
     offsets = zeros(1, size(handles.([head,'alpha']), 2));
@@ -83,14 +91,35 @@ if isfield(handles, [head,'alpha']) && ...
             handles.radius);
 
         % Compute disance from line to radiation isocenter
-        offsets(1,i) = -((y(2)-y(1)) * handles.([head,'radiso'])(1) ...
-            - (x(2)-x(1)) * handles.([head,'radiso'])(2) - x(1) * ...
+        offsets(1,i) = -((y(2)-y(1)) * handles.([head,'isocenter'])(1) ...
+            - (x(2)-x(1)) * handles.([head,'isocenter'])(2) - x(1) * ...
             y(2) + x(2) * y(1)) / sqrt((x(2)-x(1))^2 + (y(2)-y(1))^2);
     end
     
+    % Log result
+    Event(sprintf(['MLC X offset statistics computed: mean = %g, ', ...
+        'max = %g, min = %g'], mean(offsets), max(offsets), min(offsets)));
+    
     % Compute average
+    c = c + 1;
+    table{c,1} = 'Mean MLC X Offset';
     table{c,2} = sprintf('%0.2f mm', mean(offsets) * 10);
+    
+    % Compute max
+    c = c + 1;
+    table{c,1} = 'Max MLC X Offset';
+    table{c,2} = sprintf('%0.2f mm', max(offsets) * 10);
+    
+    % Compute min
+    c = c + 1;
+    table{c,1} = 'Min MLC X Offset';
+    table{c,2} = sprintf('%0.2f mm', min(offsets) * 10);
 end
 
 % Set table data
 set(handles.([head, 'table']), 'Data', table);
+
+% Catch errors, log, and rethrow
+catch err
+    Event(getReport(err, 'extended', 'hyperlinks', 'off'), 'ERROR');
+end 

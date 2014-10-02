@@ -24,9 +24,17 @@ function [isocenter, isoradius] = ComputeRadIso(alpha, radius)
 % You should have received a copy of the GNU General Public License along 
 % with this program. If not, see http://www.gnu.org/licenses/.
 
+% Run in try-catch to log error via Event.m
+try
+    
+% Log start
+Event('Computing 2D radiation isocenter using Depuydt method');
+tic;
+
 %% Compute Triplets
 % Compute each permutation of three rays
 triplets = nchoosek(1:size(alpha,2), 3);
+Event(sprintf('%i triplet permutations will be computed', size(triplets,1)));
 
 % Initialize array of circle positions and radii
 circles = zeros(size(alpha,2), 3);
@@ -39,6 +47,9 @@ for i = 1:size(triplets,1)
             round(alpha(1,triplets(i,1))) == round(alpha(1,triplets(i,3))) || ...
             round(alpha(1,triplets(i,2))) == round(alpha(1,triplets(i,3)))
         continue;
+    else
+        % Log skip
+        Event(sprintf('Triplet %i ignored as duplicate angles exist', i));
     end
     
     % Convert alpha points to cartesian space
@@ -64,7 +75,6 @@ for i = 1:size(triplets,1)
     x23 = fzero(@(x) polyval(p1-p2,x),3);
     y23 = polyval(p1,x23);
     
-   
     % Create triangulation object given intersection points
     DT = delaunayTriangulation([x12; x13; x23], [y12; y13; y23]);
     
@@ -73,12 +83,18 @@ for i = 1:size(triplets,1)
     if ~isempty(IC)
         circles(i,1:2) = IC;
         circles(i,3) = r;
+    else
+        % Otherwise, log error
+        Event(sprintf(['Incenter failed for Delaunay triangulation of ', ...
+            'triplet %i [%g %g %g], [%g %g %g]'], i, x12, x13, x23, y12, ...
+            y13, y23));
     end
 end
 
 %% Find smallest circle intersecting all rays
 % Sort circles by radius ascending
 circles = sortrows(circles,3);
+Event('Incenter circles sorted by ascending radius');
 
 % Loop through each circle, starting at the smallest
 for i = 1:size(circles,1)
@@ -111,6 +127,9 @@ for i = 1:size(circles,1)
         
         % If all rays intersect the circle
         if flag
+            % Log result
+            Event(['Triplet %i incenter identified as smallest radius', ...
+                ' intersecting all rays (%g cm)'], i, circles(i,3));
             
             % Set radiation isocenter to the smallest circle
             isocenter = circles(i,1:2);
@@ -122,6 +141,12 @@ for i = 1:size(circles,1)
     end 
 end
 
+% If no value was found
 if ~exist('isocenter', 'var')
     Event('A minimum radius was not found that intersects all rays', 'ERROR');
 end
+
+% Catch errors, log, and rethrow
+catch err
+    Event(getReport(err, 'extended', 'hyperlinks', 'off'), 'ERROR');
+end 

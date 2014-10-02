@@ -19,7 +19,7 @@ function varargout = ArcCheckRadIso(varargin)
 % You should have received a copy of the GNU General Public License along 
 % with this program. If not, see http://www.gnu.org/licenses/.
 
-% Last Modified by GUIDE v2.5 18-Aug-2014 09:50:46
+% Last Modified by GUIDE v2.5 02-Oct-2014 09:13:07
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -51,6 +51,27 @@ function ArcCheckRadIso_OpeningFcn(hObject, ~, handles, varargin)
 % Choose default command line output for ArcCheckRadIso
 handles.output = hObject;
 
+% Set version information.  See LoadVersionInfo for more details.
+handles.versionInfo = LoadVersionInfo;
+
+% Store program and MATLAB/etc version information as a string cell array
+string = {'ViewRay ArcCHECK Radiation Isocenter'
+    sprintf('Version: %s', handles.versionInfo{6});
+    sprintf('Author: Mark Geurts <mark.w.geurts@gmail.com>');
+    sprintf('MATLAB Version: %s', handles.versionInfo{2});
+    sprintf('MATLAB License Number: %s', handles.versionInfo{3});
+    sprintf('Operating System: %s', handles.versionInfo{1});
+    sprintf('CUDA: %s', handles.versionInfo{4});
+    sprintf('Java Version: %s', handles.versionInfo{5})
+};
+
+% Add dashed line separators      
+separator = repmat('-', 1,  size(char(string), 2));
+string = sprintf('%s\n', separator, string{:}, separator);
+
+% Log information
+Event(string, 'INIT');
+
 % Turn off images
 set(allchild(handles.h1axes), 'visible', 'off'); 
 set(handles.h1axes, 'visible', 'off'); 
@@ -78,16 +99,25 @@ set(handles.h1table, 'Data', cell(4,2));
 set(handles.h2table, 'Data', cell(4,2));
 set(handles.h3table, 'Data', cell(4,2));
 
-% Default offsets to on
-set(handles.h1offset, 'Value', 1);
-set(handles.h2offset, 'Value', 1);
-set(handles.h3offset, 'Value', 1);
+% Default mode to 3D
+Event('Default mode set to 3D');
+set(handles.h1mode, 'String', '3D');
+set(handles.h2mode, 'String', '3D');
+set(handles.h3mode, 'String', '3D');
 
 % Initialize global variables
 handles.path = userpath;
+Event(['Default file path set to ', handles.path]);
+
 handles.tg = 0.03; % cm
+Event(sprintf('TG offset set to %0.3f cm', handles.tg));
+
+handles.usetg = 1; % 1 accounts for TG offset (handles.tg), 0 doesn't
+Event('TG offset enabled');
+
 [handles.itheta, handles.iY] = meshgrid(0:359, -10:0.1:10);
 [~, handles.profile] = min(abs(handles.iY(:,1)));
+Event('Interpolation grid set to [0:359 deg, -10:0.1:10 cm]');
 
 % Update handles structure
 guidata(hObject, handles);
@@ -127,6 +157,10 @@ function h1browse_Callback(hObject, ~, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Log event
+Event('H1 browse button selected');
+t = tic;
+
 % Load profile data
 handles = LoadSNCacm(handles, 'h1');
 
@@ -136,15 +170,24 @@ if isfield(handles, 'h1data') && ~isempty(handles.h1data) > 0
     handles = ParseSNCProfiles(handles, 'h1');
 
     % Compute RADISO
-    handles.h1radiso = ...
-        ComputeRadIso(handles.h1alpha, handles.h1beta, handles.radius);
+    if strcmp(get(handles.h1mode, 'String'), '3D') == 1
+        [handles.h1isocenter, handles.h1isoradius] = ...
+            ComputeRadIso3d(handles.h1alpha, handles.h1beta, handles.radius);
+    else
+        [handles.h1isocenter, handles.h1isoradius] = ...
+            ComputeRadIso(handles.h1alpha, handles.radius);
+    end
     
     % Update statistics table
     handles = UpdateStatistics(handles, 'h1');
 
     % Update plot to show radiation isocenter
-    set(handles.h1display, 'Value', 2);
+    set(handles.h1display, 'Value', 3);
     handles = UpdateDisplay(handles, 'h1');
+    
+    % Log event
+    Event(sprintf('H1 data loaded successfully in %0.3f seconds', toc(t)));
+    clear t;
 end
 
 % Update handles structure
@@ -155,6 +198,9 @@ function h1display_Callback(hObject, ~, handles)
 % hObject    handle to h1display (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% Log event
+Event('H1 display dropdown changed');
 
 % Call UpdateDisplay to update plot
 handles = UpdateDisplay(handles, 'h1');
@@ -224,6 +270,9 @@ function h1clear_Callback(hObject, ~, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Log event
+Event('H1 clear all button selected');
+
 % Clear data
 handles.h1dose = [];
 handles.h1bkgd = [];
@@ -235,6 +284,8 @@ handles.h1data = [];
 handles.h1frames = [];
 handles.h1alpha = [];
 handles.h1radiso = [];
+handles.h1isocenter = [];
+handles.h1isoradius = 0;
 
 % Clear file
 set(handles.h1file, 'String', '');
@@ -244,6 +295,9 @@ handles = UpdateDisplay(handles, 'h1');
 
 % Set table data
 set(handles.h1table, 'Data', cell(4,2));
+
+% Log event
+Event('H1 data cleared from memory');
 
 % Update handles structure
 guidata(hObject, handles);
@@ -273,6 +327,10 @@ function h2browse_Callback(hObject, ~, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Log event
+Event('H2 browse button selected');
+t = tic;
+
 % Load profile data
 handles = LoadSNCacm(handles, 'h2');
 
@@ -282,15 +340,24 @@ if isfield(handles, 'h2data') && ~isempty(handles.h2data) > 0
     handles = ParseSNCProfiles(handles, 'h2');
 
     % Compute RADISO
-    handles.h2radiso = ...
-        ComputeRadIso(handles.h2alpha, handles.h2beta, handles.radius);
+    if strcmp(get(handles.h2mode, 'String'), '3D') == 1
+        [handles.h2isocenter, handles.h2isoradius] = ...
+            ComputeRadIso3d(handles.h2alpha, handles.h2beta, handles.radius);
+    else
+        [handles.h2isocenter, handles.h2isoradius] = ...
+            ComputeRadIso(handles.h2alpha, handles.radius);
+    end
     
     % Update statistics table
     handles = UpdateStatistics(handles, 'h2');
 
     % Update plot to show radiation isocenter
-    set(handles.h2display, 'Value', 2);
+    set(handles.h2display, 'Value', 3);
     handles = UpdateDisplay(handles, 'h2');
+    
+    % Log event
+    Event(sprintf('H2 data loaded successfully in %0.3f seconds', toc(t)));
+    clear t;
 end
 
 % Update handles structure
@@ -301,6 +368,9 @@ function h2display_Callback(hObject, ~, handles)
 % hObject    handle to h2display (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% Log event
+Event('H2 display dropdown changed');
 
 % Call UpdateDisplay to update plot
 handles = UpdateDisplay(handles, 'h2');
@@ -370,6 +440,9 @@ function h2clear_Callback(hObject, ~, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Log event
+Event('H2 clear all button selected');
+
 % Clear data
 handles.h2dose = [];
 handles.h2bkgd = [];
@@ -380,7 +453,8 @@ handles.h2theta = [];
 handles.h2data = [];
 handles.h2frames = [];
 handles.h2alpha = [];
-handles.h2radiso = [];
+handles.h2isocenter = [];
+handles.h2isoradius = 0;
 
 % Clear file
 set(handles.h2file, 'String', '');
@@ -390,6 +464,9 @@ handles = UpdateDisplay(handles, 'h2');
 
 % Set table data
 set(handles.h2table, 'Data', cell(4,2));
+
+% Log event
+Event('H2 data cleared from memory');
 
 % Update handles structure
 guidata(hObject, handles);
@@ -419,6 +496,10 @@ function h3browse_Callback(hObject, ~, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Log event
+Event('H3 browse button selected');
+t = tic;
+
 % Load profile data
 handles = LoadSNCacm(handles, 'h3');
 
@@ -428,15 +509,24 @@ if isfield(handles, 'h3data') && ~isempty(handles.h3data) > 0
     handles = ParseSNCProfiles(handles, 'h3');
 
     % Compute RADISO
-    handles.h3radiso = ...
-        ComputeRadIso(handles.h3alpha, handles.h3beta, handles.radius);
+    if strcmp(get(handles.h3mode, 'String'), '3D') == 1
+        [handles.h3isocenter, handles.h3isoradius] = ...
+            ComputeRadIso3d(handles.h3alpha, handles.h3beta, handles.radius);
+    else
+        [handles.h3isocenter, handles.h3isoradius] = ...
+            ComputeRadIso(handles.h3alpha, handles.radius);
+    end
     
     % Update statistics table
     handles = UpdateStatistics(handles, 'h3');
 
     % Update plot to show radiation isocenter
-    set(handles.h3display, 'Value', 2);
+    set(handles.h3display, 'Value', 3);
     handles = UpdateDisplay(handles, 'h3');
+    
+    % Log event
+    Event(sprintf('H3 data loaded successfully in %0.3f seconds', toc(t)));
+    clear t;
 end
 
 % Update handles structure
@@ -447,6 +537,9 @@ function h3display_Callback(hObject, ~, handles)
 % hObject    handle to h3display (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% Log event
+Event('H3 display dropdown changed');
 
 % Call UpdateDisplay to update plot
 handles = UpdateDisplay(handles, 'h3');
@@ -516,6 +609,9 @@ function h3clear_Callback(hObject, ~, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Log event
+Event('H3 clear all button selected');
+
 % Clear data
 handles.h3dose = [];
 handles.h3bkgd = [];
@@ -526,7 +622,8 @@ handles.h3theta = [];
 handles.h3data = [];
 handles.h3frames = [];
 handles.h3alpha = [];
-handles.h3radiso = [];
+handles.h3isocenter = [];
+handles.h3isoradius = 0;
 
 % Clear file
 set(handles.h3file, 'String', '');
@@ -537,28 +634,49 @@ handles = UpdateDisplay(handles, 'h3');
 % Set table data
 set(handles.h3table, 'Data', cell(4,2));
 
+% Log event
+Event('H3 data cleared from memory');
+
 % Update handles structure
 guidata(hObject, handles);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function h3offset_Callback(hObject, ~, handles)
-% hObject    handle to h3offset (see GCBO)
+function h3mode_Callback(hObject, ~, handles)
+% hObject    handle to h3mode (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% If data was loaded, recompute data
-if isfield(handles, 'h3data')
-    % Parse profiles
-    handles = ParseSNCProfiles(handles, 'h3');
+% Log event
+Event('H3 mode button selected');
 
-    % Compute RADISO
-    handles.h3radiso = ComputeRadIso(handles.h3alpha, handles.radius);
+% Toggle current value from 2D/3D
+if strcmp(get(hObject, 'String'), '3D')
+    set(hObject, 'String', '2D');
+    Event('Mode changed from 3D to 2D');
+else
+    set(hObject, 'String', '3D');
+    Event('Mode changed from 2D to 3D');
+end
+
+% If data was loaded, recompute RADISO
+if isfield(handles, 'h3data')
+    % Log event
+    Event('Recomputing existing data');
+    
+    if strcmp(get(handles.h3mode, 'String'), '3D')
+        % Compute RADISO
+        [handles.h3isocenter, handles.h3isoradius] = ...
+            ComputeRadIso3d(handles.h3alpha, handles.h3beta, handles.radius);
+    else
+        % Compute RADISO
+        [handles.h3isocenter, handles.h3isoradius] = ...
+            ComputeRadIso(handles.h3alpha, handles.radius);
+    end
     
     % Update statistics table
     handles = UpdateStatistics(handles, 'h3');
-
-    % Update plot to show radiation isocenter
-    set(handles.h3display, 'Value', 2);
+    
+    % Update display
     handles = UpdateDisplay(handles, 'h3');
 end
 
@@ -566,24 +684,42 @@ end
 guidata(hObject, handles);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function h2offset_Callback(hObject, ~, handles)
-% hObject    handle to h2offset (see GCBO)
+function h2mode_Callback(hObject, ~, handles)
+% hObject    handle to h2mode (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% If data was loaded, recompute data
-if isfield(handles, 'h2data')
-    % Parse profiles
-    handles = ParseSNCProfiles(handles, 'h2');
+% Log event
+Event('H2 mode button selected');
 
-    % Compute RADISO
-    handles.h2radiso = ComputeRadIso(handles.h2alpha, handles.radius);
+% Toggle current value from 2D/3D
+if strcmp(get(hObject, 'String'), '3D')
+    set(hObject, 'String', '2D');
+    Event('Mode changed from 3D to 2D');
+else
+    set(hObject, 'String', '3D');
+    Event('Mode changed from 2D to 3D');
+end
+
+% If data was loaded, recompute RADISO
+if isfield(handles, 'h2data')
+    % Log event
+    Event('Recomputing existing data');
+    
+    if strcmp(get(handles.h2mode, 'String'), '3D')
+        % Compute RADISO
+        [handles.h2isocenter, handles.h2isoradius] = ...
+            ComputeRadIso3d(handles.h2alpha, handles.h2beta, handles.radius);
+    else
+        % Compute RADISO
+        [handles.h2isocenter, handles.h2isoradius] = ...
+            ComputeRadIso(handles.h2alpha, handles.radius);
+    end
     
     % Update statistics table
     handles = UpdateStatistics(handles, 'h2');
-
-    % Update plot to show radiation isocenter
-    set(handles.h2display, 'Value', 2);
+    
+    % Update display
     handles = UpdateDisplay(handles, 'h2');
 end
 
@@ -591,24 +727,42 @@ end
 guidata(hObject, handles);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function h1offset_Callback(hObject, ~, handles)
-% hObject    handle to h1offset (see GCBO)
+function h1mode_Callback(hObject, ~, handles)
+% hObject    handle to h1mode (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% If data was loaded, recompute data
-if isfield(handles, 'h1data')
-    % Parse profiles
-    handles = ParseSNCProfiles(handles, 'h1');
+% Log event
+Event('H1 mode button selected');
 
-    % Compute RADISO
-    handles.h1radiso = ComputeRadIso(handles.h1alpha, handles.radius);
+% Toggle current value from 2D/3D
+if strcmp(get(hObject, 'String'), '3D')
+    set(hObject, 'String', '2D');
+    Event('Mode changed from 3D to 2D');
+else
+    set(hObject, 'String', '3D');
+    Event('Mode changed from 2D to 3D');
+end
+
+% If data was loaded, recompute RADISO
+if isfield(handles, 'h1data')
+    % Log event
+    Event('Recomputing existing data');
+    
+    if strcmp(get(handles.h1mode, 'String'), '3D')
+        % Compute RADISO
+        [handles.h1isocenter, handles.h1isoradius] = ...
+            ComputeRadIso3d(handles.h1alpha, handles.h1beta, handles.radius);
+    else
+        % Compute RADISO
+        [handles.h1isocenter, handles.h1isoradius] = ...
+            ComputeRadIso(handles.h1alpha, handles.radius);
+    end
     
     % Update statistics table
     handles = UpdateStatistics(handles, 'h1');
-
-    % Update plot to show radiation isocenter
-    set(handles.h1display, 'Value', 2);
+    
+    % Update display
     handles = UpdateDisplay(handles, 'h1');
 end
 
