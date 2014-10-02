@@ -26,6 +26,7 @@ function varargout = UpdateDisplay(varargin)
 
 % Specify plot options and order
 plotoptions = {
+    ''
     'Measured Data'
     'Radiation Isocenter'
     'Circumferential Profiles'
@@ -68,7 +69,7 @@ c = round(get(handles.([head,'slider']), 'Value'));
 
 % Execute code block based on display GUI item value
 switch get(handles.([head, 'display']),'Value')
-    case 1 
+    case 2
         % If data exists
         if isfield(handles, [head,'frames']) && ...
                 size(handles.([head,'frames']), 1) > 0 && ...
@@ -106,7 +107,7 @@ switch get(handles.([head, 'display']),'Value')
             set(handles.([head, 'slider']), 'enable', 'off');
             set(handles.([head, 'angle']), 'enable', 'off');
         end
-    case 2
+    case 3
         % Define square voxels
         axis image;
         
@@ -169,7 +170,7 @@ switch get(handles.([head, 'display']),'Value')
             set(handles.([head, 'axes']), 'visible', 'on'); 
             zoom on;
         end
-    case 3
+    case 4
         % If data exists
         if isfield(handles, [head,'frames']) && ...
                 size(handles.([head,'frames']), 1) > 0 && ...
@@ -206,7 +207,7 @@ switch get(handles.([head, 'display']),'Value')
             set(handles.([head, 'axes']), 'visible', 'on'); 
             zoom on;
         end
-    case 4
+    case 5
         % If data exists
         if isfield(handles, [head,'frames']) && ...
                 size(handles.([head,'frames']), 1) > 0 && ...
@@ -279,7 +280,7 @@ switch get(handles.([head, 'display']),'Value')
             set(handles.([head, 'axes']), 'visible', 'on'); 
             zoom on;
         end
-    case 5
+    case 6
         % Disable slider
         set(handles.([head, 'slider']), 'enable', 'off');
         set(handles.([head, 'angle']), 'String', '');
@@ -331,7 +332,7 @@ switch get(handles.([head, 'display']),'Value')
             set(handles.([head, 'axes']), 'visible', 'on'); 
             zoom on;
         end
-    case 6
+    case 7
         % Disable slider
         set(handles.([head, 'slider']), 'enable', 'off');
         set(handles.([head, 'angle']), 'String', '');
