@@ -237,7 +237,7 @@ if isfield(handles, [head,'data']) && ~isempty(handles.([head,'data'])) > 0
         handles.([head,'beta'])(2,c) = (r+l)/2;
         
         % If T&G offset correction is enabled, adjust angles
-        if get(handles.([head,'offset']), 'Value') == 1
+        if handles.usetg == 1
            % Decrease entrance angle by arcsin
            handles.([head,'alpha'])(1,c) = handles.([head,'alpha'])(1,c) ...
                - asind(handles.tg/handles.radius);
