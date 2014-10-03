@@ -25,7 +25,7 @@ Finally, by disabling the TG offset, this tool and the methods used therein are 
 
 ## Installation and Use
 
-
+To run this application, copy all MATLAB .m and .fig files into a directory with read/write access and then execute ArcCheckRadIso.m.  Global configuration variables can be modified by changing the values in `ArcCheckRadIso_OpeningFcn` prior to execution.  A log file will automatically be created in the same directory and can be used for troubleshooting.  For instructions on acquiring the input data, see [Measurement Instructions](README.md#measurement-instructions). For information about software version and configuration pre-requisities, see [Compatibility and Requirements](README.md#compatibility-and-requirements).
 
 ## Measurement Instructions
 
@@ -43,7 +43,11 @@ In MATLAB, this approach is implemented by first using `nchoosek` to compute all
 
 ## 3D Computation Methods
 
-Lagarias, J.C., J. A. Reeds, M. H. Wright, and P. E. Wright, [Convergence Properties of the Nelder-Mead Simplex Method in Low Dimensions](http://epubs.siam.org/doi/abs/10.1137/S1052623496303470), SIAM Journal of Optimization 9 (1998), 112-147.
+The method used in ComputeRadIso3d.m to determine the minimum radius of a sphere intersecting all incident rays is a direct search optimization.  Using an initial guess of the ArcCHECK defined isocenter [0, 0, 0], the objective function `maxradius` is minimized.  The objective function computes the largest distance, and therefore the sphere radius, from each ray to a three dimensional point.  
+
+The MATLAB Optimization Toolbox `fminsearch` function is used to optimize the coordinates of the point such that the radius is minimized.  The Nelder-Mead Simplex method used by `fminsearch` is detailed in Lagarias, J.C., J. A. Reeds, M. H. Wright, and P. E. Wright, [Convergence properties of the Nelder-Mead simplex method in low dimensions](http://epubs.siam.org/doi/abs/10.1137/S1052623496303470), SIAM Journal of Optimization 9 (1998), 112-147.
+
+The distance from each ray to the sphere center is computed for each optimization iteration using the formula `norm(cross(p1 - p2, c - p2)) / norm(p1 - p2)`, where `c1` and `p2` are points that lie on the ray and `c` is the center.
 
 ## Compatibility and Requirements
 
