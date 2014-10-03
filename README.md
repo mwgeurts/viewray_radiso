@@ -32,7 +32,9 @@ In addition to computing the radiation isocenter for a set of exposures, the too
 
 ## 2D Computation Methods
 
+The algorithm used in ComputeRadIso.m to determine the minimum radius of a circle intersecting all incident rays is detailed in Depuydt et al, [Computer-aided analysis of star shot films for high-accuracy radiation therapy treatment units](http://www.ncbi.nlm.nih.gov/pubmed/22538289), Phys. Med. Biol. 57 (2012), 2997-3011. The author shows how the minimum circle is in fact the inscribed circle for the triangle defined by three intersecting rays. Therefore, by computing the inscribed circle for all permutations of three rays from the provided dataset, one can sort the result in ascending radius and stop after the first inscribed circle that intersects all other rays.
 
+In MATLAB, this approach is implemented by first using `nchoosek` to compute all possible triplets of the array of rays. Then, for each triplet, the three intersection points of each ray are computed. Next, a Delauney triangulation object is created using `DT = delaunayTriangulation`, and the inscribed circle is computed using `incenter(DT)`.  Finally, when finding the smallest valid inscribed circle, the intersection of each circle with each ray is tested using `linecirc`.
 
 ## 3D Computation Methods
 
