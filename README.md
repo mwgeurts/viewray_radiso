@@ -38,6 +38,7 @@ In MATLAB, this approach is implemented by first using `nchoosek` to compute all
 
 ## 3D Computation Methods
 
+Lagarias, J.C., J. A. Reeds, M. H. Wright, and P. E. Wright, [Convergence Properties of the Nelder-Mead Simplex Method in Low Dimensions](http://epubs.siam.org/doi/abs/10.1137/S1052623496303470), SIAM Journal of Optimization 9 (1998), 112-147.
 
 ## Compatibility and Requirements
 
