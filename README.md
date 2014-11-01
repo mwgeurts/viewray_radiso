@@ -4,7 +4,7 @@ ViewRay Radiation Isocenter Verification
 by Mark Geurts <mark.w.geurts@gmail.com>
 <br>Copyright &copy; 2014, University of Wisconsin Board of Regents
 
-ArcCheckRadIso.m loads Sun Nuclear ArcCHECK movie files recorded across multiple exposures at different gantry angles and computes the minimum sphere (or circle, see below) that intersects the center of all exposures.  The center of this sphere is the radiation-defined isocenter of the ViewRay treatment system, while the radius is the positioning accuracy (or _walkout_) of the beam collimation system.  
+ArcCheckRadIso.m loads Sun Nuclear ArcCHECK&reg; movie files recorded across multiple exposures at different gantry angles and computes the minimum sphere (or circle, see below) that intersects the center of all exposures.  The center of this sphere is the radiation-defined isocenter of the ViewRay&trade; treatment system, while the radius is the positioning accuracy (or _walkout_) of the beam collimation system.  
 
 The concept of radiation isocenter is conventionally regarded as a two dimensional value, due in part to how radiation isocenter is historically measured (using film). In this context, the radius refers only to a circle around which each ray was measured.  This restricts each measurement to only consider a single axis of source motion (collimator, gantry, or couch). In reality, however, the true isocenter location (and minimum radius) is a function of all motion axes and non-coplanarities of a treatment system.  
 
