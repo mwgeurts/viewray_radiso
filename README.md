@@ -51,4 +51,4 @@ The distance from each ray to the sphere center is computed for each optimizatio
 
 ## Compatibility and Requirements
 
-This tool has been tested with ViewRay version 3.5 treatment software, Sun Nuclear Patient software version 6.2.3.5713, and MATLAB R2014a.  The 2D algorithm requires the MATLAB Mapping Toolbox Version 4.0 or later, while the 3D algorithm requires the Optimization Toolbox Version 7.0 or later.
+This tool has been tested with ViewRay version 3.5 treatment software and Sun Nuclear Patient software version 6.2.3.5713 on MATLAB 8.3 and 8.4.  The 2D algorithm requires the MATLAB Mapping Toolbox Version 4.0 or later (tested through 4.0.2), while the 3D algorithm requires the Optimization Toolbox Version 7.0 or later (tested through 7.1).
