@@ -4,7 +4,7 @@ ViewRay Radiation Isocenter Verification
 by Mark Geurts <mark.w.geurts@gmail.com>
 <br>Copyright &copy; 2014, University of Wisconsin Board of Regents
 
-ArcCheckRadIso.m loads Sun Nuclear ArcCHECK&reg; movie files recorded across multiple exposures at different gantry angles and computes the minimum sphere (or circle, see below) that intersects the center of all exposures.  The center of this sphere is the radiation-defined isocenter of the ViewRay&trade; treatment system, while the radius is the positioning accuracy (or _walkout_) of the beam collimation system.  
+ViewRay Radiation Isocenter Verification loads Sun Nuclear ArcCHECK&reg; movie files recorded across multiple exposures at different gantry angles and computes the minimum sphere (or circle, see below) that intersects the center of all exposures.  The center of this sphere is the radiation-defined isocenter of the ViewRay&trade; treatment system, while the radius is the positioning accuracy (or _walkout_) of the beam collimation system.  
 
 The concept of radiation isocenter is conventionally regarded as a two dimensional value, due in part to how radiation isocenter is historically measured (using film). In this context, the radius refers only to a circle around which each ray was measured.  This restricts each measurement to only consider a single axis of source motion (collimator, gantry, or couch). In reality, however, the true isocenter location (and minimum radius) is a function of all motion axes and non-coplanarities of a treatment system.  
 
@@ -25,11 +25,60 @@ Finally, by disabling the TG offset, this tool and the methods used therein are 
 
 ## Installation and Use
 
-To run this application, copy all MATLAB .m and .fig files into a directory with read/write access and then execute ArcCheckRadIso.m.  Global configuration variables can be modified by changing the values in `ArcCheckRadIso_OpeningFcn` prior to execution.  A log file will automatically be created in the same directory and can be used for troubleshooting.  For instructions on acquiring the input data, see [Measurement Instructions](README.md#measurement-instructions). For information about software version and configuration pre-requisities, see [Compatibility and Requirements](README.md#compatibility-and-requirements).
+To install this application, copy all MATLAB .m and .fig files into a directory with read/write access.  If using git, execute `git clone https://github.com/mwgeurts/viewray_radiso`.
+
+To run this application, navigate to the installation path and execute `ArcCheckRadIso` in MATLAB.  Global configuration variables can be modified by changing the values in `ArcCheckRadIso_OpeningFcn` prior to execution.  A log file will automatically be created in the same directory and can be used for troubleshooting.  For instructions on acquiring the input data, see [Measurement Instructions](README.md#measurement-instructions). For information about software version and configuration pre-requisities, see [Compatibility and Requirements](README.md#compatibility-and-requirements).
 
 ## Measurement Instructions
 
 The following steps illustrate how to acquire and process radiation isocenter measurements using the Sun Nuclear MR compatible ArcCHECK on a ViewRay treatment system.
+
+### Set up the ArcCHECK
+
+1. Place the SNC ArcCHECK on the treatment couch
+2. Connect the ArcCHECK to the Physics Workstation using the PIM and designated cable
+3. Launch the SNC Patient software on the Physics Workstation
+  1. The SNC Patient application will automatically collect a background reading
+4. Place a level along the top of the ArcCHECK and adjust the feet until it reads level
+5. Roll the ArcCHECK until it is level using the left and right coronal wall lasers
+6. Align the center of the phantom to the lasers in the IEC X, Y, and Z directions
+7. Record the current couch position
+8. Press the ENABLE and ISO buttons on the Couch Control Panel to move the couch from virtual to mechanical isocenter
+
+### Collect Data
+
+1. On the ViewRay TPDS, select Tools > QA Procedure and select the Calibration tab
+2. Select an arbitrary phantom and click Load Phantom
+3. Under Beam Setup and Controls, select Head 1
+4. Set Delivery Angle to 0 degrees
+5. Under MLC Setup, set the following MLC positions: X1/Y1 = -5.25 cm, X2/Y2 = +5.25 cm
+6. Click Set Shape to apply the MLC positions
+8. Enter 30 seconds as the Beam-On Time
+9. Click Prepare Beam Setup
+10. Click Enable Beam On
+11. On the Treatment Control Panel, wait for the ready light to appear, then press Beam On
+12. In the SNC Patient application, select Measure
+13. Wait for the beam to be delivered
+14. Change the Delivery Angle to 10 degrees
+15. Click Prepare Beam Setup
+16. Click Enable Beam On
+17. On the Treatment Control Panel, wait for the ready light to appear, then press Beam On
+18. Wait for the beam to be delivered
+19. Repeat the steps above for the remaining angles for Head 1: 0 to 180 degrees in 10 degree increments
+  1.  Skip 130 degrees as it will be incident on the couch edge, thereby reducing the quality of the results
+20. In the SNC Patient application, select Stop
+21. Save the file as _H1 G0 to G180.acm_
+22. Repeat for the remaining two heads (Head 2 from 90 to 270, Head 3 from 270 to 90)
+  1. Skip 130 and 230 degrees as they will be incident on the couch edge
+
+### Analyze Radiation Isocenter Data
+
+1. Execute the `ArcCheckRadIso` in MATLAB
+2. Under Head 1, click Browse to load the SNC ArcCHECK Multi-Frame export _H1 G0 to G180.acm_
+3. Continue to load the remaining heads
+4. Review the resulting profile comparisons and statistics
+  1. Verify that the minimum radius is less than 2 mm
+  2. Verify that the IEC X, Y, and Z position of each radius is less than 1 mm and less than 1 mm in any direction from the  isocenter position of the two other heads
 
 ## MLC Offset
 
