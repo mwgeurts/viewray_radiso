@@ -17,17 +17,21 @@ Finally, by disabling the TG offset, this tool and the methods used therein are 
 ## Contents
 
 * [Installation and Use](README.md#installation-and-use)
+* [Compatibility and Requirements](README.md#compatibility-and-requirements)
 * [Measurement Instructions](README.md#measurement-instructions)
 * [2D Computation Methods](README.md#2D-computation-methods)
 * [3D Computation Methods](README.md#3D-computation-methods)
 * [MLC Offset](README.md#mlc-offset)
-* [Compatibility and Requirements](README.md#compatibility-and-requirements)
 
 ## Installation and Use
 
 To install this application, copy all MATLAB .m and .fig files into a directory with read/write access.  If using git, execute `git clone https://github.com/mwgeurts/viewray_radiso`.
 
 To run this application, navigate to the installation path and execute `ArcCheckRadIso` in MATLAB.  Global configuration variables can be modified by changing the values in `ArcCheckRadIso_OpeningFcn` prior to execution.  A log file will automatically be created in the same directory and can be used for troubleshooting.  For instructions on acquiring the input data, see [Measurement Instructions](README.md#measurement-instructions). For information about software version and configuration pre-requisities, see [Compatibility and Requirements](README.md#compatibility-and-requirements).
+
+## Compatibility and Requirements
+
+This tool has been tested with ViewRay version 3.5 treatment software and Sun Nuclear Patient software version 6.2.3.5713 on MATLAB 8.3 and 8.4.  The 2D algorithm requires the MATLAB Mapping Toolbox Version 4.0 or later (tested through 4.0.2), while the 3D algorithm requires the Optimization Toolbox Version 7.0 or later (tested through 7.1).
 
 ## Measurement Instructions
 
@@ -97,7 +101,3 @@ The method used in ComputeRadIso3d.m to determine the minimum radius of a sphere
 The MATLAB Optimization Toolbox `fminsearch` function is used to optimize the coordinates of the point such that the radius is minimized.  The Nelder-Mead Simplex method used by `fminsearch` is detailed in Lagarias, J.C., J. A. Reeds, M. H. Wright, and P. E. Wright, [Convergence properties of the Nelder-Mead simplex method in low dimensions](http://epubs.siam.org/doi/abs/10.1137/S1052623496303470), SIAM Journal of Optimization 9 (1998), 112-147.
 
 The distance from each ray to the sphere center is computed for each optimization iteration using the formula `norm(cross(p1 - p2, c - p2)) / norm(p1 - p2)`, where `c1` and `p2` are points that lie on the ray and `c` is the center.
-
-## Compatibility and Requirements
-
-This tool has been tested with ViewRay version 3.5 treatment software and Sun Nuclear Patient software version 6.2.3.5713 on MATLAB 8.3 and 8.4.  The 2D algorithm requires the MATLAB Mapping Toolbox Version 4.0 or later (tested through 4.0.2), while the 3D algorithm requires the Optimization Toolbox Version 7.0 or later (tested through 7.1).
