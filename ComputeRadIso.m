@@ -6,7 +6,7 @@ function [isocenter, isoradius] = ComputeRadIso(alpha, radius)
 %
 % The algorithm used to determine the minimum radius is detailed in Depuydt
 % et al, Computer-aided analysis of star shot films for high-accuracy 
-% radiation therapy treatment units, Phys. Med. Biol. 57 (2012), 2997?3011.
+% radiation therapy treatment units, Phys. Med. Biol. 57 (2012), 2997-3011.
 %
 % Author: Mark Geurts, mark.w.geurts@gmail.com
 % Copyright (C) 2014 University of Wisconsin Board of Regents
@@ -46,10 +46,12 @@ for i = 1:size(triplets,1)
     if round(alpha(1,triplets(i,1))) == round(alpha(1,triplets(i,2))) || ...
             round(alpha(1,triplets(i,1))) == round(alpha(1,triplets(i,3))) || ...
             round(alpha(1,triplets(i,2))) == round(alpha(1,triplets(i,3)))
-        continue;
-    else
+        
         % Log skip
         Event(sprintf('Triplet %i ignored as duplicate angles exist', i));
+        
+        % Skip ahead
+        continue;
     end
     
     % Convert alpha points to cartesian space
@@ -128,8 +130,8 @@ for i = 1:size(circles,1)
         % If all rays intersect the circle
         if flag
             % Log result
-            Event(['Triplet %i incenter identified as smallest radius', ...
-                ' intersecting all rays (%g cm)'], i, circles(i,3));
+            Event(sprintf(['Triplet %i incenter identified as smallest', ...
+                ' radius intersecting all rays (%g cm)'], i, circles(i,3)));
             
             % Set radiation isocenter to the smallest circle
             isocenter = circles(i,1:2);
