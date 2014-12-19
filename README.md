@@ -12,7 +12,7 @@ Because the ArcCHECK measures radiation across a cylinder in space, a three dime
 
 The graphical user interface has been optimized for ViewRay by providing three panels (with identical controls and analysis) for each ViewRay head.  However, exposures do not need to be limited to a single head (additionally, multiple files can be loaded at once) such that all three heads can be analyzed collectively.  Both methods are recommended in practice; the positioning accuracy of all three heads simultaneously may be more clinically relevant, while analyzing a single head can provide additional insight into systematic MLC calibration errors.  
 
-Finally, by disabling the TG offset, this tool and the methods used therein are not specific to ViewRay and are capable of analyzing data from any treatment system.
+Finally, by disabling the Tongue and Groove (TG) offset, this tool and the methods used therein are not specific to ViewRay and are capable of analyzing data from any treatment system.
 
 ## Contents
 
