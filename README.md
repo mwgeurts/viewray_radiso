@@ -31,7 +31,7 @@ To run this application, navigate to the installation path and execute `ArcCheck
 
 ## Compatibility and Requirements
 
-This tool has been tested with ViewRay version 3.5 treatment software and Sun Nuclear Patient software version 6.2.3.5713 on MATLAB 8.3 and 8.4.  The 2D algorithm requires the MATLAB Mapping Toolbox Version 4.0 or later (tested through 4.0.2), while the 3D algorithm requires the Optimization Toolbox Version 7.0 or later (tested through 7.1).
+This tool has been tested with ViewRay version 3.5 treatment software and Sun Nuclear Patient software version 6.2.3.5713 on MATLAB 8.3 through 8.5.  The 2D algorithm requires the MATLAB Mapping Toolbox Version 4.0 or later (tested through 4.1), while the 3D algorithm requires the Optimization Toolbox Version 7.0 or later (tested through 7.2).
 
 ## Measurement Instructions
 
