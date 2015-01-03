@@ -1,8 +1,8 @@
 function varargout = PrintReport(varargin)
-% PrintReport is called by ExitDetector.m after daily and patient static
-% couch QA has been loaded and analyzed, and creates a "report" figure of
-% the plots and statistics generated in ExitDetector.  This report is then
-% saved to a temporary file in PDF format and opened using the default
+% PrintReport is called by ArcCheckRadIso after radiation isocenter
+% profiles have been loaded and analyzed, and creates a "report" figure of
+% the plots and statistics generated in ArcCheckRadIso.  This report is 
+% then saved to a temporary file in PDF format and opened using the default
 % application.  Once the PDF is opened, this figure is deleted. The visual 
 % layout of the report is defined in PrintReport.fig.
 %
@@ -14,11 +14,11 @@ function varargout = PrintReport(varargin)
 % PrintReport('Data', handles);
 %
 % For more information on the variables required in the data structure, see
-% LoadPlan.m, UpdateSinogramDisplay.m, InitializeViewer.m, UpdateDVH.m, and
-% UpdateResultsDisplay.m.
+% ComputeRadIso, ComputeRadIso3d, LoadSNCacm, ParseSNCProfiles, and 
+% LoadVersionInfo.
 %
 % Author: Mark Geurts, mark.w.geurts@gmail.com
-% Copyright (C) 2014 University of Wisconsin Board of Regents
+% Copyright (C) 2015 University of Wisconsin Board of Regents
 %
 % This program is free software: you can redistribute it and/or modify it 
 % under the terms of the GNU General Public License as published by the  
