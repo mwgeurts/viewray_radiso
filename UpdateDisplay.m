@@ -40,6 +40,7 @@ plotoptions = {
 
 % If no input arguments are provided
 if nargin == 0
+    
     % Return the plot options
     varargout{1} = plotoptions;
     
@@ -48,6 +49,8 @@ if nargin == 0
     
 % Otherwise, if 2, set the input variables and update the plot
 elseif nargin == 2
+    
+    % Set variables
     handles = varargin{1};
     head = varargin{2};
     
@@ -73,42 +76,45 @@ set(handles.([head, 'axes']), 'visible', 'off');
 cmap = jet(24);
 
 % Get slider and angle
-c = round(get(handles.([head,'slider']), 'Value'));
+c = round(get(handles.([head, 'slider']), 'Value'));
 
 % Execute code block based on display GUI item value
-switch get(handles.([head, 'display']),'Value')
+switch get(handles.([head, 'display']), 'Value')
+    
     % Measured data (frames)
     case 2
         % Log selection
         Event('Measured Data selected for display');
         
         % If data exists
-        if isfield(handles, [head,'frames']) && ...
-                size(handles.([head,'frames']), 1) > 0 && ...
-                size(handles.([head,'frames']), 3) >= c
+        if isfield(handles, [head, 'frames']) && ...
+                size(handles.([head, 'frames']), 1) > 0 && ...
+                size(handles.([head, 'frames']), 3) >= c
             
             % Enable slider
             set(handles.([head, 'slider']), 'enable', 'on');
             set(handles.([head, 'angle']), 'enable', 'on');
             
             % Plot map
-            imagesc(circshift(handles.([head,'frames'])(:,:,c),-180,2));
-            set(gca,'XTick', 1:30:361);
-            set(gca,'XTickLabel', -180:30:180);
+            imagesc(circshift(handles.([head, 'frames'])(:,:,c), -180, 2));
+            set(gca, 'XTick', 1:30:361);
+            set(gca, 'XTickLabel', -180:30:180);
             xlabel('ArcCHECK Angle (deg)');
-            set(gca,'YTick', 1:20:201);
-            set(gca,'YTickLabel', 10:-2:-10);
+            set(gca, 'YTick', 1:20:201);
+            set(gca, 'YTickLabel', 10:-2:-10);
             ylabel('ArcCHECK IEC Y (cm)');
 
             % Compute central axis angle (for display)
-            if handles.([head,'alpha'])(2,c) < handles.([head,'alpha'])(1,c)
-                angle = (handles.([head,'alpha'])(2,c) + ...
-                    handles.([head,'alpha'])(1,c)+180)/2;
+            if handles.([head, 'alpha'])(2,c) < ...
+                    handles.([head, 'alpha'])(1,c)
+                angle = (handles.([head, 'alpha'])(2,c) + ...
+                    handles.([head, 'alpha'])(1,c)+180)/2;
             else
-                angle = (handles.([head,'alpha'])(2,c) + ...
-                    handles.([head,'alpha'])(1,c)-180)/2;
+                angle = (handles.([head, 'alpha'])(2,c) + ...
+                    handles.([head, 'alpha'])(1,c)-180)/2;
             end
-            set(handles.([head,'angle']), 'String', sprintf('%0.1f', angle));
+            set(handles.([head, 'angle']), 'String', ...
+                sprintf('%0.1f', angle));
             
             % Turn on display
             set(allchild(handles.([head, 'axes'])), 'visible', 'on'); 
@@ -134,45 +140,54 @@ switch get(handles.([head, 'display']),'Value')
         set(handles.([head, 'angle']), 'enable', 'off');
         
         % If data exists
-        if isfield(handles, [head,'isoradius']) && ...
-                handles.([head,'isoradius']) > 0 && ...
-                isfield(handles, [head,'isocenter']) && ...
-                size(handles.([head,'isocenter']), 2) >= 2
+        if isfield(handles, [head, 'isoradius']) && ...
+                handles.([head, 'isoradius']) > 0 && ...
+                isfield(handles, [head, 'isocenter']) && ...
+                size(handles.([head, 'isocenter']), 2) >= 2
             hold on;
 
             % Initialize legend text
             legends = cell(1, size(handles.([head, 'alpha']),2)+1);
             
             % Plot isocenter
-            [x, y] = pol2cart(linspace(0,2*pi,100), ...
+            [x, y] = pol2cart(linspace(0, 2*pi, 100), ...
                 handles.([head, 'isoradius']));
             x = x + handles.([head, 'isocenter'])(1);
             y = y + handles.([head, 'isocenter'])(2);
-            plot(y * 10, x * 10, '-r','LineWidth',2);
+            plot(y * 10, x * 10, '-r', 'LineWidth', 2);
             legends{1} = sprintf('%0.2f mm', ...
                 handles.([head, 'isoradius']) * 10);
             
             % Plot field centers
-            for i = 1:size(handles.([head, 'alpha']),2)
-                [x, y]  = pol2cart(handles.([head, 'alpha'])(:,i)*pi/180, ...
+            for i = 1:size(handles.([head, 'alpha']), 2)
+                [x, y]  = pol2cart(handles.([head, 'alpha'])(:,i) * pi/180, ...
                     handles.radius);
-                plot(y * 10, x * 10, '-', 'Color', cmap(min(i,size(cmap,1)),:));
+                plot(y * 10, x * 10, '-', 'Color', ...
+                    cmap(min(i,size(cmap,1)),:));
                 
                 % Compute central axis angle (for display)
-                if handles.([head,'alpha'])(2,i) < handles.([head,'alpha'])(1,i)
-                    angle = (handles.([head,'alpha'])(2,i) + ...
-                        handles.([head,'alpha'])(1,i)+180)/2;
+                if handles.([head, 'alpha'])(2,i) < ...
+                        handles.([head, 'alpha'])(1,i)
+                    angle = (handles.([head, 'alpha'])(2,i) + ...
+                        handles.([head, 'alpha'])(1,i)+180)/2;
                 else
-                    angle = (handles.([head,'alpha'])(2,i) + ...
-                        handles.([head,'alpha'])(1,i)-180)/2;
+                    angle = (handles.([head, 'alpha'])(2,i) + ...
+                        handles.([head, 'alpha'])(1,i)-180)/2;
                 end
             
                 legends{i+1} = sprintf('%0.1f', angle);
             end
 
+            % If less than 22 angles exist
             if length(legends) < 22
+                
+                % Display a length
                 legend(legends);
-                Event('Legend not displayed as over 21 frames were analyzed');
+            else
+                
+                % Otherwise, display a notification
+                Event(['Legend not displayed as over 21 frames ', ...
+                    'were analyzed']);
             end
             
             % Set axis labels
@@ -181,9 +196,9 @@ switch get(handles.([head, 'display']),'Value')
 
             % Set plot options
             xlim([-5 5]);
-            set(gca,'XTick',-5:1:5);
+            set(gca, 'XTick',-5:1:5);
             ylim([-5 5]);
-            set(gca,'YTick',-5:1:5);
+            set(gca, 'YTick',-5:1:5);
             hold off;
             grid on;
 
@@ -199,35 +214,37 @@ switch get(handles.([head, 'display']),'Value')
         Event('Circumferential Profiles selected for display');
         
         % If data exists
-        if isfield(handles, [head,'frames']) && ...
-                size(handles.([head,'frames']), 1) > 0 && ...
-                size(handles.([head,'frames']), 3) >= c
+        if isfield(handles, [head, 'frames']) && ...
+                size(handles.([head, 'frames']), 1) > 0 && ...
+                size(handles.([head, 'frames']), 3) >= c
             
             % Enable slider
             set(handles.([head, 'slider']), 'enable', 'on');
             set(handles.([head, 'angle']), 'enable', 'on');
             
             % Extract circumferential profile
-            profile = handles.([head,'frames'])(handles.profile,:,c);
+            profile = handles.([head, 'frames'])(handles.profile,:,c);
             
             % Plot map
             plot(handles.itheta, profile, '-b');
             xlim([1 361]);
-            set(gca,'XTick', 1:30:361);
-            set(gca,'XTickLabel', -180:30:180);
+            set(gca, 'XTick', 1:30:361);
+            set(gca, 'XTickLabel', -180:30:180);
             xlabel('ArcCHECK Angle (deg)');
             ylabel('Measured Dose (cGy)');
             grid on;
 
             % Compute central axis angle (for display)
-            if handles.([head,'alpha'])(2,c) < handles.([head,'alpha'])(1,c)
-                angle = (handles.([head,'alpha'])(2,c) + ...
-                    handles.([head,'alpha'])(1,c)+180)/2;
+            if handles.([head, 'alpha'])(2,c) < ...
+                    handles.([head, 'alpha'])(1,c)
+                angle = (handles.([head, 'alpha'])(2,c) + ...
+                    handles.([head, 'alpha'])(1,c)+180)/2;
             else
-                angle = (handles.([head,'alpha'])(2,c) + ...
-                    handles.([head,'alpha'])(1,c)-180)/2;
+                angle = (handles.([head, 'alpha'])(2,c) + ...
+                    handles.([head, 'alpha'])(1,c)-180)/2;
             end
-            set(handles.([head,'angle']), 'String', sprintf('%0.1f', angle));
+            set(handles.([head, 'angle']), 'String', ...
+                sprintf('%0.1f', angle));
             
             % Turn on display
             set(allchild(handles.([head, 'axes'])), 'visible', 'on'); 
@@ -241,23 +258,23 @@ switch get(handles.([head, 'display']),'Value')
         Event('Longitudinal Profiles selected for display');
         
         % If data exists
-        if isfield(handles, [head,'frames']) && ...
-                size(handles.([head,'frames']), 1) > 0 && ...
-                size(handles.([head,'frames']), 3) >= c
+        if isfield(handles, [head, 'frames']) && ...
+                size(handles.([head, 'frames']), 1) > 0 && ...
+                size(handles.([head, 'frames']), 3) >= c
             
             % Enable slider
             set(handles.([head, 'slider']), 'enable', 'on');
             set(handles.([head, 'angle']), 'enable', 'on');
             
             % Extract circumferential profile
-            profile = handles.([head,'frames'])(handles.profile,:,c);
+            profile = handles.([head, 'frames'])(handles.profile,:,c);
             
             % Determine location of maximum
             [~, I] = max(profile);
 
             % Circshift to center maximum
             profile = circshift(profile, floor(size(profile,2)/2)-I, 2);
-            frame = squeeze(circshift(handles.([head,'frames'])(:,:,c), ...
+            frame = squeeze(circshift(handles.([head, 'frames'])(:,:,c), ...
                 floor(size(profile,2)/2)-I, 2));
 
             % Redetermine location and value of maximum
@@ -291,21 +308,23 @@ switch get(handles.([head, 'display']),'Value')
             % Plot map
             plot(handles.iY(:,1), long, '-b');
             xlim([-10 10]);
-            set(gca,'XTick', -10:2:10);
-            set(gca,'XTickLabel', -10:2:10);
+            set(gca, 'XTick', -10:2:10);
+            set(gca, 'XTickLabel', -10:2:10);
             xlabel('IEC Y (cm)');
             ylabel('Measured Dose (cGy)');
             grid on;
 
             % Compute central axis angle (for display)
-            if handles.([head,'alpha'])(2,c) < handles.([head,'alpha'])(1,c)
-                angle = (handles.([head,'alpha'])(2,c) + ...
-                    handles.([head,'alpha'])(1,c)+180)/2;
+            if handles.([head, 'alpha'])(2,c) < ...
+                    handles.([head, 'alpha'])(1,c)
+                angle = (handles.([head, 'alpha'])(2,c) + ...
+                    handles.([head, 'alpha'])(1,c)+180)/2;
             else
-                angle = (handles.([head,'alpha'])(2,c) + ...
-                    handles.([head,'alpha'])(1,c)-180)/2;
+                angle = (handles.([head, 'alpha'])(2,c) + ...
+                    handles.([head, 'alpha'])(1,c)-180)/2;
             end
-            set(handles.([head,'angle']), 'String', sprintf('%0.1f', angle));
+            set(handles.([head, 'angle']), 'String', ...
+                sprintf('%0.1f', angle));
             
             % Turn on display
             set(allchild(handles.([head, 'axes'])), 'visible', 'on'); 
@@ -324,43 +343,45 @@ switch get(handles.([head, 'display']),'Value')
         set(handles.([head, 'angle']), 'enable', 'off');
         
         % If data exists
-        if isfield(handles, [head,'alpha']) && ...
-                size(handles.([head,'alpha']), 2) > 0 && ...
-                isfield(handles, [head,'isocenter']) && ...
-                size(handles.([head,'isocenter']), 2) >= 2
+        if isfield(handles, [head, 'alpha']) && ...
+                size(handles.([head, 'alpha']), 2) > 0 && ...
+                isfield(handles, [head, 'isocenter']) && ...
+                size(handles.([head, 'isocenter']), 2) >= 2
             
             % Initialize offset array
-            offsets = zeros(2, size(handles.([head,'alpha']), 2));
+            offsets = zeros(2, size(handles.([head, 'alpha']), 2));
             
             % Loop through angles
-            for i = 1:size(handles.([head,'alpha']), 2)
+            for i = 1:size(handles.([head, 'alpha']), 2)
                 
                 % Convert points to cartesian coordinates
-                [x, y] = pol2cart(handles.([head,'alpha'])(:,i)*pi/180, ...
+                [x, y] = pol2cart(handles.([head, 'alpha'])(:,i)*pi/180, ...
                     handles.radius);
         
                 % Compute disance from line to radiation isocenter
-                offsets(1,i) = -((y(2)-y(1)) * handles.([head,'isocenter'])(1) ...
-                    - (x(2)-x(1)) * handles.([head,'isocenter'])(2) - x(1) * ...
-                    y(2) + x(2) * y(1)) / sqrt((x(2)-x(1))^2 + (y(2)-y(1))^2);
+                offsets(1,i) = -((y(2)-y(1)) * ...
+                    handles.([head, 'isocenter'])(1) - (x(2)-x(1)) * ...
+                    handles.([head, 'isocenter'])(2) - x(1) * y(2) + x(2) ...
+                    * y(1)) / sqrt((x(2)-x(1))^2 + (y(2)-y(1))^2);
 
                 % Compute central axis angle (for display)
-                if handles.([head,'alpha'])(2,i) < handles.([head,'alpha'])(1,i)
-                    offsets(2,i) = (handles.([head,'alpha'])(2,i) + ...
-                        handles.([head,'alpha'])(1,i)+180)/2;
+                if handles.([head, 'alpha'])(2,i) < ...
+                        handles.([head, 'alpha'])(1,i)
+                    offsets(2,i) = (handles.([head, 'alpha'])(2,i) + ...
+                        handles.([head, 'alpha'])(1,i)+180)/2;
                 else
-                    offsets(2,i) = (handles.([head,'alpha'])(2,i) + ...
-                        handles.([head,'alpha'])(1,i)-180)/2;
+                    offsets(2,i) = (handles.([head, 'alpha'])(2,i) + ...
+                        handles.([head, 'alpha'])(1,i)-180)/2;
                 end
             end
             
             % Plot map
             h = plot(offsets(2,:), offsets(1,:) * 10, 'o');
-            set(h,'MarkerEdgeColor','b','MarkerFaceColor','b')
+            set(h, 'MarkerEdgeColor', 'b', 'MarkerFaceColor', 'b')
             xlim([min(offsets(2,:))-0.1 max(offsets(2,:))+0.1]);
             xlabel('Beam Angle (deg)');
             ylim([-3 3]);
-            set(gca,'YTick', -3:0.5:3);
+            set(gca, 'YTick', -3:0.5:3);
             ylabel('MLC X Offset (mm)');
             grid on;
             
@@ -381,41 +402,42 @@ switch get(handles.([head, 'display']),'Value')
         set(handles.([head, 'angle']), 'enable', 'off');
         
         % If data exists
-        if isfield(handles, [head,'alpha']) && ...
-                size(handles.([head,'alpha']), 2) > 0 && ...
-                isfield(handles, [head,'beta']) && ...
-                size(handles.([head,'beta']), 2) > 0 && ...
-                isfield(handles, [head,'isocenter']) && ...
-                size(handles.([head,'isocenter']), 2) == 3
+        if isfield(handles, [head, 'alpha']) && ...
+                size(handles.([head, 'alpha']), 2) > 0 && ...
+                isfield(handles, [head, 'beta']) && ...
+                size(handles.([head, 'beta']), 2) > 0 && ...
+                isfield(handles, [head, 'isocenter']) && ...
+                size(handles.([head, 'isocenter']), 2) == 3
             
             % Initialize offset array
-            offsets = zeros(2, size(handles.([head,'alpha']), 2));
+            offsets = zeros(2, size(handles.([head, 'alpha']), 2));
             
             % Loop through angles
-            for i = 1:size(handles.([head,'alpha']), 2)
+            for i = 1:size(handles.([head, 'alpha']), 2)
                 
                 % Store field center minus IEC Y isocenter 
-                offsets(1,i) = (handles.([head,'beta'])(1,i) + ...
-                    handles.([head,'beta'])(2,i)) / 2 - ...
-                    handles.([head,'isocenter'])(3);
+                offsets(1,i) = (handles.([head, 'beta'])(1,i) + ...
+                    handles.([head, 'beta'])(2,i)) / 2 - ...
+                    handles.([head, 'isocenter'])(3);
 
                 % Compute central axis angle
-                if handles.([head,'alpha'])(2,i) < handles.([head,'alpha'])(1,i)
-                    offsets(2,i) = (handles.([head,'alpha'])(2,i) + ...
-                        handles.([head,'alpha'])(1,i)+180)/2;
+                if handles.([head, 'alpha'])(2,i) < ...
+                        handles.([head, 'alpha'])(1,i)
+                    offsets(2,i) = (handles.([head, 'alpha'])(2,i) + ...
+                        handles.([head, 'alpha'])(1,i)+180)/2;
                 else
-                    offsets(2,i) = (handles.([head,'alpha'])(2,i) + ...
-                        handles.([head,'alpha'])(1,i)-180)/2;
+                    offsets(2,i) = (handles.([head, 'alpha'])(2,i) + ...
+                        handles.([head, 'alpha'])(1,i)-180)/2;
                 end
             end
 
             % Plot map
             h = plot(offsets(2,:), offsets(1,:) * 10, 'o');
-            set(h,'MarkerEdgeColor','b','MarkerFaceColor','b')
+            set(h, 'MarkerEdgeColor', 'b', 'MarkerFaceColor', 'b')
             xlim([min(offsets(2,:))-0.1 max(offsets(2,:))+0.1]);
             xlabel('Beam Angle (deg)');
             ylim([-3 3]);
-            set(gca,'YTick', -3:0.5:3);
+            set(gca, 'YTick', -3:0.5:3);
             ylabel('MLC Y Offset (mm)');
             grid on;
             

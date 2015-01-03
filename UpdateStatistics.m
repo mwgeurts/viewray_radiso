@@ -39,16 +39,16 @@ c = 0;
 
 % Report radiation isocenter
 c = c + 1;
-table{c,1} = 'Minimum Radiation Isocenter Radius';
-if isfield(handles, [head,'isoradius'])
+table{c,1} = 'Minimum Radius';
+if isfield(handles, [head, 'isoradius'])
     table{c,2} = sprintf('%0.2f mm', handles.([head, 'isoradius']) * 10);
 end
 
 % Report IEC X offset
 c = c + 1;
 table{c,1} = 'Isocenter IEC X Offset';
-if isfield(handles, [head,'isocenter']) && ...
-        size(handles.([head,'isocenter']), 2) >= 2
+if isfield(handles, [head, 'isocenter']) && ...
+        size(handles.([head, 'isocenter']), 2) >= 2
     table{c,2} = sprintf('%0.2f mm', handles.([head, 'isocenter'])(2) * 10);
 end
 
@@ -57,42 +57,42 @@ c = c + 1;
 table{c,1} = 'Isocenter IEC Y Offset';
 
 % If 3D was computed
-if isfield(handles, [head,'isocenter']) && ...
-        size(handles.([head,'isocenter']), 2) == 3
+if isfield(handles, [head, 'isocenter']) && ...
+        size(handles.([head, 'isocenter']), 2) == 3
     table{c,2} = sprintf('%0.2f mm', handles.([head, 'isocenter'])(3) * 10);
     
 % Otherwise, if 2D was computed
-elseif size(handles.([head,'isocenter']), 2) == 2
+elseif size(handles.([head, 'isocenter']), 2) == 2
     table{c,2} = 'N/A';
 end
 
 % Report IEC Z offset
 c = c + 1;
 table{c,1} = 'Isocenter IEC Z Offset';
-if isfield(handles, [head,'isocenter']) && ...
-        size(handles.([head,'isocenter']), 2) >= 2
+if isfield(handles, [head, 'isocenter']) && ...
+        size(handles.([head, 'isocenter']), 2) >= 2
     table{c,2} = sprintf('%0.2f mm', handles.([head, 'isocenter'])(1) * 10);
 end
 
 % Report average/max/min MLC X offset
-if isfield(handles, [head,'alpha']) && ...
-        size(handles.([head,'alpha']), 2) > 0 && ...
-        isfield(handles, [head,'isocenter']) && ...
-        size(handles.([head,'isocenter']), 2) >= 2
+if isfield(handles, [head, 'alpha']) && ...
+        size(handles.([head, 'alpha']), 2) > 0 && ...
+        isfield(handles, [head, 'isocenter']) && ...
+        size(handles.([head, 'isocenter']), 2) >= 2
 
     % Initialize offset array
-    offsets = zeros(1, size(handles.([head,'alpha']), 2));
+    offsets = zeros(1, size(handles.([head, 'alpha']), 2));
 
     % Loop through angles
-    for i = 1:size(handles.([head,'alpha']), 2)
+    for i = 1:size(handles.([head, 'alpha']), 2)
 
         % Convert points to cartesian coordinates
-        [x, y] = pol2cart(handles.([head,'alpha'])(:,i)*pi/180, ...
+        [x, y] = pol2cart(handles.([head, 'alpha'])(:,i)*pi/180, ...
             handles.radius);
 
         % Compute disance from line to radiation isocenter
-        offsets(1,i) = -((y(2)-y(1)) * handles.([head,'isocenter'])(1) ...
-            - (x(2)-x(1)) * handles.([head,'isocenter'])(2) - x(1) * ...
+        offsets(1,i) = -((y(2)-y(1)) * handles.([head, 'isocenter'])(1) ...
+            - (x(2)-x(1)) * handles.([head, 'isocenter'])(2) - x(1) * ...
             y(2) + x(2) * y(1)) / sqrt((x(2)-x(1))^2 + (y(2)-y(1))^2);
     end
     

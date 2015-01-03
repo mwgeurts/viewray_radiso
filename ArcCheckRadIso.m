@@ -19,7 +19,7 @@ function varargout = ArcCheckRadIso(varargin)
 % You should have received a copy of the GNU General Public License along 
 % with this program. If not, see http://www.gnu.org/licenses/.
 
-% Last Modified by GUIDE v2.5 02-Oct-2014 16:08:51
+% Last Modified by GUIDE v2.5 03-Jan-2015 09:37:37
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -108,6 +108,9 @@ set(handles.h1table, 'Data', cell(4,2));
 set(handles.h2table, 'Data', cell(4,2));
 set(handles.h3table, 'Data', cell(4,2));
 
+% Disable print button
+set(handles.print_button, 'enable', 'off');
+
 % Default mode to 3D
 Event('Default mode set to 3D');
 set(handles.h1mode, 'String', '3D');
@@ -175,13 +178,15 @@ handles = LoadSNCacm(handles, 'h1');
 
 % If data was loaded
 if isfield(handles, 'h1data') && ~isempty(handles.h1data) > 0
+    
     % Parse profiles
     handles = ParseSNCProfiles(handles, 'h1');
 
     % Compute RADISO
     if strcmp(get(handles.h1mode, 'String'), '3D') == 1
         [handles.h1isocenter, handles.h1isoradius] = ...
-            ComputeRadIso3d(handles.h1alpha, handles.h1beta, handles.radius);
+            ComputeRadIso3d(handles.h1alpha, handles.h1beta, ...
+            handles.radius);
     else
         [handles.h1isocenter, handles.h1isoradius] = ...
             ComputeRadIso(handles.h1alpha, handles.radius);
@@ -193,6 +198,9 @@ if isfield(handles, 'h1data') && ~isempty(handles.h1data) > 0
     % Update plot to show radiation isocenter
     set(handles.h1display, 'Value', 3);
     handles = UpdateDisplay(handles, 'h1');
+    
+    % Enable print button
+    set(handles.print_button, 'enable', 'on');
     
     % Log event
     Event(sprintf('H1 data loaded successfully in %0.3f seconds', toc(t)));
@@ -345,13 +353,15 @@ handles = LoadSNCacm(handles, 'h2');
 
 % If data was loaded
 if isfield(handles, 'h2data') && ~isempty(handles.h2data) > 0
+    
     % Parse profiles
     handles = ParseSNCProfiles(handles, 'h2');
 
     % Compute RADISO
     if strcmp(get(handles.h2mode, 'String'), '3D') == 1
         [handles.h2isocenter, handles.h2isoradius] = ...
-            ComputeRadIso3d(handles.h2alpha, handles.h2beta, handles.radius);
+            ComputeRadIso3d(handles.h2alpha, handles.h2beta, ...
+            handles.radius);
     else
         [handles.h2isocenter, handles.h2isoradius] = ...
             ComputeRadIso(handles.h2alpha, handles.radius);
@@ -363,6 +373,9 @@ if isfield(handles, 'h2data') && ~isempty(handles.h2data) > 0
     % Update plot to show radiation isocenter
     set(handles.h2display, 'Value', 3);
     handles = UpdateDisplay(handles, 'h2');
+    
+    % Enable print button
+    set(handles.print_button, 'enable', 'on');
     
     % Log event
     Event(sprintf('H2 data loaded successfully in %0.3f seconds', toc(t)));
@@ -514,13 +527,15 @@ handles = LoadSNCacm(handles, 'h3');
 
 % If data was loaded
 if isfield(handles, 'h3data') && ~isempty(handles.h3data) > 0
+    
     % Parse profiles
     handles = ParseSNCProfiles(handles, 'h3');
 
     % Compute RADISO
     if strcmp(get(handles.h3mode, 'String'), '3D') == 1
         [handles.h3isocenter, handles.h3isoradius] = ...
-            ComputeRadIso3d(handles.h3alpha, handles.h3beta, handles.radius);
+            ComputeRadIso3d(handles.h3alpha, handles.h3beta, ...
+            handles.radius);
     else
         [handles.h3isocenter, handles.h3isoradius] = ...
             ComputeRadIso(handles.h3alpha, handles.radius);
@@ -532,6 +547,9 @@ if isfield(handles, 'h3data') && ~isempty(handles.h3data) > 0
     % Update plot to show radiation isocenter
     set(handles.h3display, 'Value', 3);
     handles = UpdateDisplay(handles, 'h3');
+    
+    % Enable print button
+    set(handles.print_button, 'enable', 'on');
     
     % Log event
     Event(sprintf('H3 data loaded successfully in %0.3f seconds', toc(t)));
@@ -785,7 +803,7 @@ function figure1_ResizeFcn(hObject, ~, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Set units to pixels
-set(hObject,'Units','pixels') 
+set(hObject, 'Units', 'pixels') 
 
 % Loop through each head statistics table
 for i = 1:3
@@ -802,3 +820,15 @@ end
 
 % Clear temporary variables
 clear pos;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function print_button_Callback(~, ~, handles)
+% hObject    handle to print_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Log event
+Event('Print button selected');
+
+% Execute PrintReport, passing current handles structure as data
+PrintReport('Data', handles);
