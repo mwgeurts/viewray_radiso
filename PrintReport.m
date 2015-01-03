@@ -486,22 +486,22 @@ guidata(hObject, handles);
 % Clear temporary variable
 clear data;
 
-% % Get temporary file name
-% temp = [tempname, '.pdf'];
-% 
-% % Print report
-% Event(['Saving report to ', temp]);
-% saveas(hObject, temp);
-% 
-% % Open file
-% Event(['Opening file ', temp]);
-% open(temp);
-% 
-% % Log completion
-% Event(sprintf('Report saved successfully in %0.3f seconds', toc));
-% 
-% % Close figure
-% close(hObject);
+% Get temporary file name
+temp = [tempname, '.pdf'];
+
+% Print report
+Event(['Saving report to ', temp]);
+saveas(hObject, temp);
+
+% Open file
+Event(['Opening file ', temp]);
+open(temp);
+
+% Log completion
+Event(sprintf('Report saved successfully in %0.3f seconds', toc));
+
+% Close figure
+close(hObject);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function PrintReport_OutputFcn(~, ~, ~) 
