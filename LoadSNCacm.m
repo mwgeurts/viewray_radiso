@@ -34,12 +34,15 @@ Event('UI window opened to select file');
 
 % If a file was selected
 if iscell(name) || sum(name ~= 0)
+
     % If not cell array, cast as one
     if ~iscell(name)
+    
         % Update text box with file name
         set(handles.([head,'file']), 'String', fullfile(path, name));
         names{1} = name;
     else
+    
         % Update text box with first file
         set(handles.([head,'file']), 'String', 'Multiple files selected');
         names = name;
@@ -70,6 +73,7 @@ if iscell(name) || sum(name ~= 0)
 
         % While the end-of-file has not been reached
         while ~feof(fid)
+        
             % Retrieve the next line in the file
             tline = fgetl(fid);
 
@@ -77,6 +81,7 @@ if iscell(name) || sum(name ~= 0)
             [match, nomatch] = regexp(tline, ...
                 sprintf('^Dose Per Count:\t'), 'match', 'split');
             if size(match,1) > 0
+            
                 % Extract dose per count
                 scan = textscan(nomatch{2}, '%f');
                 handles.([head,'dose']) = scan{1};
@@ -86,6 +91,7 @@ if iscell(name) || sum(name ~= 0)
             [match, nomatch] = regexp(tline, ...
                 sprintf('^Inclinometer Rotation:\t'), 'match', 'split');
             if size(match,1) > 0
+            
                 % Extract rotation and radius
                 scan = textscan(nomatch{2}, '%f %s %s %f');
                 handles.([head,'rotation']) = scan{1};
@@ -103,6 +109,7 @@ if iscell(name) || sum(name ~= 0)
                 sprintf('^Detector Spacing:\t\t\t\t\t\t\t\t\tz\\(n\\)\t\t'), ...
                 'match', 'split');
             if size(match,1) > 0
+            
                 % Extract all Z positions
                 Z = cell2mat(textscan(nomatch{2}, repmat('%f ', 1, 1386)));
                 
@@ -115,6 +122,7 @@ if iscell(name) || sum(name ~= 0)
                 sprintf('^Concatenation:\tFALSE\t\t\t\t\t\t\t\tX\\(n\\)\t\t'), ...
                 'match', 'split');
             if size(match,1) > 0
+            
                 % Extract all X positions
                 X = cell2mat(textscan(nomatch{2}, repmat('%f ', 1, 1386)));
                 
@@ -127,6 +135,7 @@ if iscell(name) || sum(name ~= 0)
                 sprintf('^Imported Data:\tFALSE\t\t\t\t\t\t\t\tY\\(n\\) cm\t\t'), ...
                 'match', 'split');
             if size(match,1) > 0
+            
                 % Extract all Y positions
                 handles.([head,'Y']) = cell2mat(textscan(nomatch{2}, ...
                     repmat('%f ', 1, 1386)));
@@ -139,6 +148,7 @@ if iscell(name) || sum(name ~= 0)
             [match, nomatch] = regexp(tline, ...
                 sprintf('^Background\t\t\t\t\t\t\t\t\t\t'), 'match', 'split');
             if size(match,1) > 0
+            
                 % Extract all background counts
                 handles.([head,'bkgd']) = cell2mat(textscan(nomatch{2}, ...
                     repmat('%f ', 1, 1386 + 1)));
@@ -153,6 +163,7 @@ if iscell(name) || sum(name ~= 0)
             [match, nomatch] = regexp(tline, ...
                 sprintf('^Calibration\t\t\t\t\t\t\t\t\t\t'), 'match', 'split');
             if size(match,1) > 0
+            
                 % Extract all calibration values
                 handles.([head,'cal']) = cell2mat(textscan(nomatch{2}, ...
                     repmat('%f ', 1, 1386 + 1)));
@@ -164,7 +175,7 @@ if iscell(name) || sum(name ~= 0)
                     vertcat(handles.([head,'data']), cell2mat(data));
                 
                 % Log values
-                Event(sprintf(['Detector array calibration loaded, randing ', ...
+                Event(sprintf(['Detector array calibration loaded, ranging ', ...
                     'from %g to %g'], min(handles.([head,'cal'])), ...
                     max(handles.([head,'cal']))));
                 Event(sprintf('%i x %i data array loaded', ...
