@@ -127,9 +127,17 @@ Event(sprintf('TG offset set to %0.3f cm', handles.tg));
 handles.usetg = 1; % 1 accounts for TG offset (handles.tg), 0 doesn't
 Event('TG offset enabled');
 
-[handles.itheta, handles.iY] = meshgrid(0:359, -10:0.1:10);
-[~, handles.profile] = min(abs(handles.iY(:,1)));
-Event('Interpolation grid set to [0:359 deg, -10:0.1:10 cm]');
+% Add snc_extract submodule to search path
+addpath('./snc_extract');
+
+% Check if MATLAB can find ParseSNCacm.m
+if exist('ParseSNCacm', 'file') ~= 2
+    
+    % If not, throw an error
+    Event(['The snc_extract submodule does not exist in the search path. ', ...
+        'Use git clone --recursive or git submodule init followed by git ', ...
+        'submodule update to fetch all submodules'], 'ERROR');
+end
 
 % Update handles structure
 guidata(hObject, handles);

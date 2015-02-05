@@ -1,7 +1,6 @@
-*.DS_STORE
+GPU/
+ganymed-ssh2*
+.DS_STORE
 *.m~
-*.acm
-*.acml
-*.txt
-*.pdf
-*.doc
+log.txt
+test_data/
