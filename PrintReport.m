@@ -142,6 +142,7 @@ if isfield(data, 'h1data') && ~isempty(data.h1data) > 0
         hold off;
         title('Head 1 Radiation Isocenter', 'FontSize', 9);
         grid on;
+        box on;
 
         % Turn on display
         set(allchild(handles.axes1), 'visible', 'on'); 

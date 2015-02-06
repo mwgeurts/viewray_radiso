@@ -4,9 +4,8 @@ function varargout = UpdateDisplay(varargin)
 % function returns a string cell array of available plots that the user can
 % choose from.  When called with two input arguments, the first being a GUI
 % handles structure and the second a string indicating the head number (h1,
-% h2, or h3), this function will look for measured data (loaded by 
-% ParseSNCProfiles  respectively) and update the display based on the 
-% display menu UI component.
+% h2, or h3), this function will look for measured data and update the 
+% display based on the display menu UI component.
 %
 % Author: Mark Geurts, mark.w.geurts@gmail.com
 % Copyright (C) 2014 University of Wisconsin Board of Regents
@@ -83,6 +82,7 @@ switch get(handles.([head, 'display']), 'Value')
     
     % Measured data (frames)
     case 2
+        
         % Log selection
         Event('Measured Data selected for display');
         
@@ -128,6 +128,7 @@ switch get(handles.([head, 'display']), 'Value')
         
     % Radiation isocenter    
     case 3
+        
         % Log selection
         Event('Radiation Isocenter selected for display');
         
@@ -201,6 +202,7 @@ switch get(handles.([head, 'display']), 'Value')
             set(gca, 'YTick',-5:1:5);
             hold off;
             grid on;
+            box on;
 
             % Turn on display
             set(allchild(handles.([head, 'axes'])), 'visible', 'on'); 
@@ -210,6 +212,7 @@ switch get(handles.([head, 'display']), 'Value')
         
     % Circumferential profiles    
     case 4
+        
         % Log selection
         Event('Circumferential Profiles selected for display');
         
@@ -223,7 +226,8 @@ switch get(handles.([head, 'display']), 'Value')
             set(handles.([head, 'angle']), 'enable', 'on');
             
             % Extract circumferential profile
-            profile = handles.([head, 'frames'])(handles.profile,:,c);
+            profile = handles.([head, 'frames'])(ceil(size(handles.(...
+                [head, 'frames']),1)/2),:,c);
             
             % Plot map
             plot(handles.itheta, profile, '-b');
@@ -231,7 +235,7 @@ switch get(handles.([head, 'display']), 'Value')
             set(gca, 'XTick', 1:30:361);
             set(gca, 'XTickLabel', -180:30:180);
             xlabel('ArcCHECK Angle (deg)');
-            ylabel('Measured Dose (cGy)');
+            ylabel('Measured Dose (Gy)');
             grid on;
 
             % Compute central axis angle (for display)
@@ -254,6 +258,7 @@ switch get(handles.([head, 'display']), 'Value')
         
     % Longitudinal profiles    
     case 5
+        
         % Log selection
         Event('Longitudinal Profiles selected for display');
         
@@ -267,7 +272,8 @@ switch get(handles.([head, 'display']), 'Value')
             set(handles.([head, 'angle']), 'enable', 'on');
             
             % Extract circumferential profile
-            profile = handles.([head, 'frames'])(handles.profile,:,c);
+            profile = handles.([head, 'frames'])(ceil(size(handles.(...
+                [head, 'frames']),1)/2),:,c);
             
             % Determine location of maximum
             [~, I] = max(profile);
@@ -311,7 +317,7 @@ switch get(handles.([head, 'display']), 'Value')
             set(gca, 'XTick', -10:2:10);
             set(gca, 'XTickLabel', -10:2:10);
             xlabel('IEC Y (cm)');
-            ylabel('Measured Dose (cGy)');
+            ylabel('Measured Dose (Gy)');
             grid on;
 
             % Compute central axis angle (for display)
@@ -334,6 +340,7 @@ switch get(handles.([head, 'display']), 'Value')
         
     % MLC X Offsets    
     case 6
+        
         % Log selection
         Event('MLC X Offsets selected for display');
         
@@ -393,6 +400,7 @@ switch get(handles.([head, 'display']), 'Value')
     
     % MLC Y Offsets    
     case 7
+        
         % Log selection
         Event('MLC Y Offsets selected for display');
         

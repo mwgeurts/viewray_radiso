@@ -39,28 +39,33 @@ Event(['Computing 3D radiation isocenter using Nelder-Mead simplex ', ...
 tic;
 
 % Run minimum solution finder, using 0,0,0 as initial guess
-Event('[0,0,0] set as initial guess');
+Event('[0 0 0] cm set as initial guess');
 
 % Set optimization options
 options = optimset('Display', 'off', 'MaxIter', 200, 'MaxFunEvals', 500, ...
     'TolFun', 1e-5, 'TolX', 1e-5, 'PlotFcns', []);
 
 % Start optimization
-[isocenter, isoradius, exitflag, output] = fminsearch(@maxradius, ...
-    [0,0,0], options, alpha, beta, radius);
+[isocenter, isoradius, exitflag, output] = fminsearch(@maxradius, [0,0,0], ...
+    options, alpha, beta, radius);
 
 % Verify exit status
 if exitflag == 1
+    
     % Optimization converged
     Event(sprintf(['Optimization converged to solution after %i iterations', ...
         ' and %i function calls in %0.3f seconds'], output.iterations, ...
         output.funcCount, toc));
+    
 elseif exitflag == 0
+    
     % Optimization stopped due to MaxIter or MaxFunEvals
     Event(sprintf(['Optimization stopped prematurely after %i iterations', ...
         ' and %i function calls in %0.3f seconds'], output.iterations, ...
         output.funcCount, toc));
+    
 elseif exitflag == -1
+    
     % Optimization terminated by output function
     Event(sprintf(['Optimization was terminated by the output function in', ...
         ' %0.3f seconds'], toc));
@@ -68,7 +73,7 @@ end
 
 % Log solution
 Event(sprintf(['Minimum sphere of radius %g cm identified at coordinates ', ...
-    '[%g cm %g cm %g cm]'], isoradius, isocenter));
+    '[%g %g %g] cm'], isoradius, isocenter));
 
 % Catch errors, log, and rethrow
 catch err
@@ -83,12 +88,11 @@ function maxr = maxradius(center, a, b, r)
 % parent function ComputeRadIso3d
 %
 % center The point X/Y/Z coordinates (obective function variable)
-% a      A 2xn array of alpha values (cylindrical angles) for the
-%        entrance and exit points of the ray
-% b 	 A 2xn array of beta values (cylindrical Y values) for the
-%        entrance and exit points of the ray
-% r      The radius of the cylinder upon which the alpha values are
-%        determined
+% a      2 x n array of alpha values (cylindrical angles) for the entrance
+%        and exit points of the ray
+% b 	 2 x n array of beta values (cylindrical Y values) for the entrance
+%        and exit points of the ray
+% r      Radius of the cylinder upon which the alpha values are determined
 
 % Initialize variable for radii
 rs = zeros(size(a,2),1);

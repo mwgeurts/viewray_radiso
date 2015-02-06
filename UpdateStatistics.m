@@ -2,7 +2,7 @@ function handles = UpdateStatistics(handles, head)
 % UpdateStatistics is called by ArcCheckRadIso to compute and update
 % the statistics table for each head.  See below for more information on
 % the statistics computed.  This function uses GUI handles data (passed in
-% the first input variable) loaded by ParseSNCProfiles and ComputeRadIso.  
+% the first input variable) loaded by AnalyzeACFields and ComputeRadIso.  
 % This function also uses the input variable head, which should be a string 
 % indicating the head number (h1, h2, or h3) to determine which UI table to 
 % modify.  Upon successful completion, an updated GUI handles structure is 
@@ -28,7 +28,7 @@ function handles = UpdateStatistics(handles, head)
 try
 
 % Log start
-Event(['Updating ', head, 'table statistics']);
+Event(['Updating ', head, ' table statistics']);
 tic;
 
 % Load table data cell array
@@ -76,7 +76,7 @@ end
 
 % Report average/max/min MLC X offset
 if isfield(handles, [head, 'alpha']) && ...
-        size(handles.([head, 'alpha']), 2) > 0 && ...
+        size(handles.([head, 'alpha']), 2) >= 2 && ...
         isfield(handles, [head, 'isocenter']) && ...
         size(handles.([head, 'isocenter']), 2) >= 2
 
