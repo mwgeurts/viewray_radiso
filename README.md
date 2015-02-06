@@ -19,8 +19,8 @@ Finally, by disabling the Tongue and Groove (TG) offset, this tool and the metho
 * [Installation and Use](README.md#installation-and-use)
 * [Compatibility and Requirements](README.md#compatibility-and-requirements)
 * [Measurement Instructions](README.md#measurement-instructions)
-* [2D Computation Methods](README.md#2D-computation-methods)
-* [3D Computation Methods](README.md#3D-computation-methods)
+* [2D Computation Methods](README.md#2d-computation-methods)
+* [3D Computation Methods](README.md#3d-computation-methods)
 * [MLC Offset](README.md#mlc-offset)
 
 ## Installation and Use
