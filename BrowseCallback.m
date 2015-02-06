@@ -41,6 +41,7 @@ if iscell(name) || sum(name ~= 0)
         set(handles.([head,'file']), 'String', fullfile(path, name));
         
         % Store filenames
+        handles.([head,'names']) = cell(1);
         handles.([head,'names']){1} = name;
     else
     
