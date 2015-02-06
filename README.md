@@ -2,7 +2,7 @@ ViewRay Radiation Isocenter Verification
 ==============
 
 by Mark Geurts <mark.w.geurts@gmail.com>
-<br>Copyright &copy; 2014, University of Wisconsin Board of Regents
+<br>Copyright &copy; 2015, University of Wisconsin Board of Regents
 
 ViewRay Radiation Isocenter Verification loads Sun Nuclear ArcCHECK&reg; movie files recorded across multiple exposures at different gantry angles and computes the minimum sphere (or circle, see below) that intersects the center of all exposures.  The center of this sphere is the radiation-defined isocenter of the ViewRay&trade; treatment system, while the radius is the positioning accuracy (or _walkout_) of the beam collimation system.  
 
