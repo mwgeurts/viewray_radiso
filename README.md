@@ -12,7 +12,7 @@ Because the ArcCHECK measures radiation across a cylinder in space, a three dime
 
 The graphical user interface has been optimized for ViewRay by providing three panels (with identical controls and analysis) for each ViewRay head.  However, exposures do not need to be limited to a single head (additionally, multiple files can be loaded at once) such that all three heads can be analyzed collectively.  Both methods are recommended in practice; the positioning accuracy of all three heads simultaneously may be more clinically relevant, while analyzing a single head can provide additional insight into systematic MLC calibration errors.  
 
-Finally, by disabling the Tongue and Groove (TG) offset, this tool and the methods used therein are not specific to ViewRay and are capable of analyzing data from any treatment system.
+Finally, by disabling the Tongue and Groove (TG) offset, this tool and the methods used therein are not specific to ViewRay and are capable of analyzing data from any treatment system.  ArcCHECK is a trademark of Sun Nuclear Corporation.
 
 ## Contents
 
@@ -25,7 +25,7 @@ Finally, by disabling the Tongue and Groove (TG) offset, this tool and the metho
 
 ## Installation and Use
 
-To install this application, copy all MATLAB .m and .fig files into a directory with read/write access.  If using git, execute `git clone https://github.com/mwgeurts/viewray_radiso`.
+To install this application, copy all MATLAB .m and .fig files into a directory with read/write access and then copy the [snc_extract submodule](https://github.com/mwgeurts/snc_extract) into the gamma subfolder.  If using git, execute `git clone --recursive https://github.com/mwgeurts/viewray_radiso`.
 
 To run this application, navigate to the installation path and execute `ArcCheckRadIso` in MATLAB.  Global configuration variables can be modified by changing the values in `ArcCheckRadIso_OpeningFcn` prior to execution.  A log file will automatically be created in the same directory and can be used for troubleshooting.  For instructions on acquiring the input data, see [Measurement Instructions](README.md#measurement-instructions). For information about software version and configuration pre-requisities, see [Compatibility and Requirements](README.md#compatibility-and-requirements).
 
