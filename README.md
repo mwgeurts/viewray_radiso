@@ -27,7 +27,7 @@ Finally, by disabling the Tongue and Groove (TG) offset, this tool and the metho
 
 To install the most recent release of this application, download [ViewRay Radiation Isocenter Verification.mlappinstall](https://github.com/mwgeurts/viewray_radiso/archive/master.zip) from this repository, then open MATLAB, select the __Apps__ tab, and click __Install App__.  In the Install App dialog box, browse to the downloaded file and then click __Open__.  Finally, in the App Installer dialog box click __Install__ or __Reinstall__.  If using git, execute `git clone --recursive https://github.com/mwgeurts/viewray_radiso`.
 
-Global configuration variables can be modified by changing the values in `ArcCheckRadIso_OpeningFcn` prior to execution.  A log file will automatically be created in the same directory and can be used for troubleshooting.  For instructions on acquiring the input data and using this tool, see [Measurement Instructions](README.md#measurement-instructions). For information about software version and configuration pre-requisities, see [Compatibility and Requirements](README.md#compatibility-and-requirements).
+Global configuration variables can be modified by changing the values in `ArcCheckRadIso_OpeningFcn()` prior to execution.  A log file will automatically be created in the same directory and can be used for troubleshooting.  For instructions on acquiring the input data and using this tool, see [Measurement Instructions](README.md#measurement-instructions). For information about software version and configuration pre-requisities, see [Compatibility and Requirements](README.md#compatibility-and-requirements).
 
 ## Compatibility and Requirements
 
@@ -77,7 +77,7 @@ The following steps illustrate how to acquire and process radiation isocenter me
 
 ### Analyze Radiation Isocenter Data
 
-1. Execute the `ArcCheckRadIso` in MATLAB
+1. Execute the `ArcCheckRadIso()` in MATLAB
 2. Under Head 1, click Browse to load the SNC ArcCHECK Multi-Frame export __H1 G0 to G180.acm__
 3. Continue to load the remaining heads
 4. Review the resulting profile comparisons and statistics
@@ -88,13 +88,13 @@ The following steps illustrate how to acquire and process radiation isocenter me
 
 The algorithm used in `ComputeRadIso()` to determine the minimum radius of a circle intersecting all incident rays is detailed in Depuydt et al, [Computer-aided analysis of star shot films for high-accuracy radiation therapy treatment units](http://www.ncbi.nlm.nih.gov/pubmed/22538289), Phys. Med. Biol. 57 (2012), 2997-3011. The author shows how the minimum radius can be determined from an inscribed circle for the triangle defined by three intersecting rays. Therefore, by computing the inscribed circles for all permutations of three rays from the provided dataset, one can sort the result in ascending radius and stop after the first inscribed circle that intersects all other rays.
 
-In MATLAB, this approach is implemented by first using `nchoosek` to compute all possible triplets of the array of rays. Then, for each triplet, the three intersection points of each ray are computed. Next, a Delauney triangulation object is created using `DT = delaunayTriangulation`, and the inscribed circle is computed using `incenter(DT)`.  Finally, when finding the smallest valid inscribed circle, the intersection of each circle with each ray is tested using `linecirc`.
+In MATLAB, this approach is implemented by first using `nchoosek()` to compute all possible triplets of the array of rays. Then, for each triplet, the three intersection points of each ray are computed. Next, a Delauney triangulation object is created using `DT = delaunayTriangulation`, and the inscribed circle is computed using `incenter(DT)`.  Finally, when finding the smallest valid inscribed circle, the intersection of each circle with each ray is tested using `linecirc()`.
 
 ## 3D Computation Methods
 
-The method used in `ComputeRadIso3d()` to determine the minimum radius of a sphere intersecting all incident rays is a direct search optimization.  Using an initial guess of the ArcCHECK defined isocenter [0, 0, 0], the objective function `maxradius` is minimized.  The objective function computes the largest distance, and therefore the sphere radius, from each ray to a three dimensional point.  
+The method used in `ComputeRadIso3d()` to determine the minimum radius of a sphere intersecting all incident rays is a direct search optimization.  Using an initial guess of the ArcCHECK defined isocenter [0, 0, 0], the objective function `maxradius()` is minimized.  The objective function computes the largest distance, and therefore the sphere radius, from each ray to a three dimensional point.  
 
-The MATLAB Optimization Toolbox `fminsearch` function is used to optimize the coordinates of the point such that the radius is minimized.  The Nelder-Mead Simplex method used by `fminsearch` is detailed in Lagarias, J.C., J. A. Reeds, M. H. Wright, and P. E. Wright, [Convergence properties of the Nelder-Mead simplex method in low dimensions](http://epubs.siam.org/doi/abs/10.1137/S1052623496303470), SIAM Journal of Optimization 9 (1998), 112-147.
+The MATLAB Optimization Toolbox `fminsearch()` function is used to optimize the coordinates of the point such that the radius is minimized.  The Nelder-Mead Simplex method used by `fminsearch()` is detailed in Lagarias, J.C., J. A. Reeds, M. H. Wright, and P. E. Wright, [Convergence properties of the Nelder-Mead simplex method in low dimensions](http://epubs.siam.org/doi/abs/10.1137/S1052623496303470), SIAM Journal of Optimization 9 (1998), 112-147.
 
 The distance from each ray to the sphere center is computed for each optimization iteration using the formula `norm(cross(p1 - p2, c - p2)) / norm(p1 - p2)`, where `c1` and `p2` are points that lie on the ray and `c` is the center.
 
