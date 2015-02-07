@@ -25,9 +25,9 @@ Finally, by disabling the Tongue and Groove (TG) offset, this tool and the metho
 
 ## Installation and Use
 
-To install the most recent release of this application, download *ArcCheckRadIso.mlappinstall*, then open MATLAB, select the *Apps* tab, and click *Install App*.  In the Install App dialog box, browse to the downloaded file and then click *Open*.  Finally, in the App Installer dialog box click *Install* or *Reinstall*.  If using git, execute `git clone --recursive https://github.com/mwgeurts/viewray_radiso`.
+To install the most recent release of this application, download [ViewRay Radiation Isocenter Verification.mlappinstall](https://github.com/mwgeurts/viewray_radiso/archive/master.zip) from this repository, then open MATLAB, select the __Apps__ tab, and click __Install App__.  In the Install App dialog box, browse to the downloaded file and then click __Open__.  Finally, in the App Installer dialog box click __Install__ or __Reinstall__.  If using git, execute `git clone --recursive https://github.com/mwgeurts/viewray_radiso`.
 
-Global configuration variables can be modified by changing the values in `ArcCheckRadIso_OpeningFcn` prior to execution.  A log file will automatically be created in the same directory and can be used for troubleshooting.  For instructions on acquiring the input data and processing in this tool, see [Measurement Instructions](README.md#measurement-instructions). For information about software version and configuration pre-requisities, see [Compatibility and Requirements](README.md#compatibility-and-requirements).
+Global configuration variables can be modified by changing the values in `ArcCheckRadIso_OpeningFcn` prior to execution.  A log file will automatically be created in the same directory and can be used for troubleshooting.  For instructions on acquiring the input data and using this tool, see [Measurement Instructions](README.md#measurement-instructions). For information about software version and configuration pre-requisities, see [Compatibility and Requirements](README.md#compatibility-and-requirements).
 
 ## Compatibility and Requirements
 
@@ -71,14 +71,14 @@ The following steps illustrate how to acquire and process radiation isocenter me
 19. Repeat the steps above for the remaining angles for Head 1: 0 to 180 degrees in 10 degree increments
   1.  Skip 130 degrees as it will be incident on the couch edge, thereby reducing the quality of the results
 20. In the SNC Patient application, select Stop
-21. Save the file as _H1 G0 to G180.acm_
+21. Save the file as __H1 G0 to G180.acm__
 22. Repeat for the remaining two heads (Head 2 from 90 to 270, Head 3 from 270 to 90)
   1. Skip 130 and 230 degrees as they will be incident on the couch edge
 
 ### Analyze Radiation Isocenter Data
 
 1. Execute the `ArcCheckRadIso` in MATLAB
-2. Under Head 1, click Browse to load the SNC ArcCHECK Multi-Frame export _H1 G0 to G180.acm_
+2. Under Head 1, click Browse to load the SNC ArcCHECK Multi-Frame export __H1 G0 to G180.acm__
 3. Continue to load the remaining heads
 4. Review the resulting profile comparisons and statistics
   1. Verify that the minimum radius is less than 2 mm
