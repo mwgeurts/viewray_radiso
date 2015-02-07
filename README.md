@@ -25,9 +25,9 @@ Finally, by disabling the Tongue and Groove (TG) offset, this tool and the metho
 
 ## Installation and Use
 
-To install this application, download `ArcCheckRadIso.mlappinstall` and [install in MATLAB](http://www.mathworks.com/help/matlab/creating_guis/install-and-run-app.html). If using git, execute `git clone --recursive https://github.com/mwgeurts/viewray_radiso`.
+To install the most recent release of this application, download *ArcCheckRadIso.mlappinstall*, then open MATLAB, select the *Apps* tab, and click *Install App*.  In the Install App dialog box, browse to the downloaded file and then click *Open*.  Finally, in the App Installer dialog box click *Install* or *Reinstall*.  If using git, execute `git clone --recursive https://github.com/mwgeurts/viewray_radiso`.
 
-To run this application, navigate to the installation path and execute `ArcCheckRadIso` in MATLAB.  Global configuration variables can be modified by changing the values in `ArcCheckRadIso_OpeningFcn` prior to execution.  A log file will automatically be created in the same directory and can be used for troubleshooting.  For instructions on acquiring the input data, see [Measurement Instructions](README.md#measurement-instructions). For information about software version and configuration pre-requisities, see [Compatibility and Requirements](README.md#compatibility-and-requirements).
+Global configuration variables can be modified by changing the values in `ArcCheckRadIso_OpeningFcn` prior to execution.  A log file will automatically be created in the same directory and can be used for troubleshooting.  For instructions on acquiring the input data and processing in this tool, see [Measurement Instructions](README.md#measurement-instructions). For information about software version and configuration pre-requisities, see [Compatibility and Requirements](README.md#compatibility-and-requirements).
 
 ## Compatibility and Requirements
 
