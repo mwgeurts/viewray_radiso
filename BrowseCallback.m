@@ -62,6 +62,9 @@ if iscell(name) || sum(name ~= 0)
     % Load data
     handles.([head,'data']) = ...
         ParseSNCacm(handles.path, handles.([head,'names']));
+    handles.sncversion = handles.([head,'data']).version;
+    handles.collector = handles.([head,'data']).dmodel;
+    handles.serial = handles.([head,'data']).dserial;
     
     % Parse profiles and store results
     results = AnalyzeACFields(handles.([head,'data']));

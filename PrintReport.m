@@ -14,8 +14,7 @@ function varargout = PrintReport(varargin)
 % PrintReport('Data', handles);
 %
 % For more information on the variables required in the data structure, see
-% ComputeRadIso, ComputeRadIso3d, LoadSNCacm, ParseSNCProfiles, and 
-% LoadVersionInfo.
+% ComputeRadIso, ComputeRadIso3d, BrowseCallback, and LoadVersionInfo.
 %
 % Author: Mark Geurts, mark.w.geurts@gmail.com
 % Copyright (C) 2015 University of Wisconsin Board of Regents
@@ -66,7 +65,7 @@ function PrintReport_OpeningFcn(hObject, ~, handles, varargin)
 handles.output = hObject;
 
 % Log start of printing and start timer
-Event('Printing Exit Detector Analysis report');
+Event('Printing report');
 tic;
 
 % Load data structure from varargin
@@ -78,7 +77,7 @@ for i = 1:length(varargin)
 end
 
 % Set report date/time
-set(handles.text12, 'String', datestr(now,'yyyy-mm-dd HH:MM:SS'));
+set(handles.text12, 'String', datestr(now));
 
 % Set user name
 [s, cmdout] = system('whoami');
@@ -91,7 +90,17 @@ end
 clear s cmdout;
 
 % Set version
-set(handles.text8, 'String', data.versionInfo{6});
+set(handles.text8, 'String', sprintf('%s (%s)', data.version, ...
+    data.versionInfo{6}));
+
+% Set SNC software
+set(handles.text44, 'String', data.sncversion);
+
+% Set collector
+set(handles.text41, 'String', data.collector);
+
+% Set collector serial number:
+set(handles.text42, 'String', data.serial);
 
 % Define a color map for displaying multiple datasets
 cmap = jet(24);
@@ -200,8 +209,8 @@ if isfield(data, 'h1data') && ~isempty(data.h1data) > 0
     
     % Add statistics table
     table = get(data.h1table, 'Data');
-    set(handles.text19, 'String', sprintf('%s\n\n', table{:,1}));
-    set(handles.text20, 'String', sprintf('%s\n\n', table{:,2}));
+    set(handles.text19, 'String', sprintf('%s\n\n', table{1:7,1}));
+    set(handles.text20, 'String', sprintf('%s\n\n', table{1:7,2}));
     
     % Clear temporary variables
     clear table h i offsets x y;
@@ -328,8 +337,8 @@ if isfield(data, 'h2data') && ~isempty(data.h2data) > 0
     
     % Add statistics table
     table = get(data.h2table, 'Data');
-    set(handles.text31, 'String', sprintf('%s\n\n', table{:,1}));
-    set(handles.text32, 'String', sprintf('%s\n\n', table{:,2}));
+    set(handles.text31, 'String', sprintf('%s\n\n', table{1:7,1}));
+    set(handles.text32, 'String', sprintf('%s\n\n', table{1:7,2}));
     
     % Clear temporary variables
     clear table h i offsets x y;
@@ -456,8 +465,8 @@ if isfield(data, 'h3data') && ~isempty(data.h3data) > 0
     
     % Add statistics table
     table = get(data.h3table, 'Data');
-    set(handles.text37, 'String', sprintf('%s\n\n', table{:,1}));
-    set(handles.text38, 'String', sprintf('%s\n\n', table{:,2}));
+    set(handles.text37, 'String', sprintf('%s\n\n', table{1:7,1}));
+    set(handles.text38, 'String', sprintf('%s\n\n', table{1:7,2}));
     
     % Clear temporary variables
     clear table h i offsets x y;

@@ -51,6 +51,9 @@ function ArcCheckRadIso_OpeningFcn(hObject, ~, handles, varargin)
 % Choose default command line output for ArcCheckRadIso
 handles.output = hObject;
 
+% Set version handle
+handles.version = '1.1.0';
+
 % Determine path of current application
 [path, ~, ~] = fileparts(mfilename('fullpath'));
 
@@ -65,7 +68,7 @@ handles.versionInfo = LoadVersionInfo;
 
 % Store program and MATLAB/etc version information as a string cell array
 string = {'ViewRay ArcCHECK Radiation Isocenter'
-    sprintf('Version: %s', handles.versionInfo{6});
+    sprintf('Version: %s (%s)', handles.version, handles.versionInfo{6});
     sprintf('Author: Mark Geurts <mark.w.geurts@gmail.com>');
     sprintf('MATLAB Version: %s', handles.versionInfo{2});
     sprintf('MATLAB License Number: %s', handles.versionInfo{3});
@@ -80,6 +83,10 @@ string = sprintf('%s\n', separator, string{:}, separator);
 
 % Log information
 Event(string, 'INIT');
+
+%% Initialize UI
+% Set version UI text
+set(handles.version_text, 'String', sprintf('Version %s', handles.version));
 
 % Turn off images
 set(allchild(handles.h1axes), 'visible', 'off'); 
