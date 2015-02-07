@@ -1,0 +1,93 @@
+<deployment-project plugin="plugin.apptool" plugin-version="1.0">
+  <configuration build-checksum="82941545" file="/Users/mgeurts/Documents/MATLAB/viewray_radiso/ViewRay Radiation Isocenter Verification.prj" location="/Users/mgeurts/Documents/MATLAB/viewray_radiso" name="ViewRay Radiation Isocenter Verification" target="target.mlapps" target-name="Package App">
+    <param.appname>ViewRay Radiation Isocenter Verification</param.appname>
+    <param.authnamewatermark>Mark Geurts</param.authnamewatermark>
+    <param.email>mark.w.geurts@gmail.com</param.email>
+    <param.company>University of Wisconsin-Madison</param.company>
+    <param.icon />
+    <param.icons />
+    <param.summary>ArcCHECK based radiation isocenter analysis for ViewRay systems</param.summary>
+    <param.description>ViewRay Radiation Isocenter Verification loads Sun Nuclear ArcCHECK® movie files recorded across multiple exposures at different gantry angles and computes the minimum sphere (or circle, see below) that intersects the center of all exposures. The center of this sphere is the radiation-defined isocenter of the ViewRay™ treatment system, while the radius is the positioning accuracy (or walkout) of the beam collimation system.
+
+The concept of radiation isocenter is conventionally regarded as a two dimensional value, due in part to how radiation isocenter is historically measured (using film). In this context, the radius refers only to a circle around which each ray was measured. This restricts each measurement to only consider a single axis of source motion (collimator, gantry, or couch). In reality, however, the true isocenter location (and minimum radius) is a function of all motion axes and non-coplanarities of a treatment system.
+
+Because the ArcCHECK measures radiation across a cylinder in space, a three dimenionsal ray can be computed that defines the center the beam for each source position where both the entrance and exit are defined on the detectors. The radiation isocenter therefore becomes the center of a sphere that represents the location in space from which the smallest sphere intersecting all rays is minimized. This has the advantage of being able to evaluate all components of source motion at once, and is more realistic of the true three dimensionsal source positioning accuracy of the system.
+
+The graphical user interface has been optimized for ViewRay by providing three panels (with identical controls and analysis) for each ViewRay head. However, exposures do not need to be limited to a single head (additionally, multiple files can be loaded at once) such that all three heads can be analyzed collectively. Both methods are recommended in practice; the positioning accuracy of all three heads simultaneously may be more clinically relevant, while analyzing a single head can provide additional insight into systematic MLC calibration errors.
+
+Finally, by disabling the Tongue and Groove (TG) offset, this tool and the methods used therein are not specific to ViewRay and are capable of analyzing data from any treatment system. ArcCHECK is a trademark of Sun Nuclear Corporation. MATLAB® is a registered trademark of MathWorks Inc.</param.description>
+    <param.screenshot>/Users/mgeurts/Desktop/Screen Shot 2015-02-07 at 12.47.00 PM.png</param.screenshot>
+    <param.version>1.1.0</param.version>
+    <param.products.name>
+      <item>MATLAB</item>
+      <item>Mapping Toolbox</item>
+    </param.products.name>
+    <param.products.id>
+      <item>'1'</item>
+      <item>'11'</item>
+    </param.products.id>
+    <param.products.version>
+      <item>8.4</item>
+      <item>4.0.2</item>
+    </param.products.version>
+    <param.platforms />
+    <param.output>${PROJECT_ROOT}/ViewRay Radiation Isocenter Verification.mlappinstall</param.output>
+    <param.guid>d4a47320-e138-41f8-a9b6-15bb62bb1716</param.guid>
+    <unset>
+      <param.authnamewatermark />
+      <param.email />
+      <param.company />
+      <param.icon />
+      <param.icons />
+      <param.platforms />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}/ArcCheckRadIso.m</file>
+    </fileset.main>
+    <fileset.depfun>
+      <file>${MATLAB_ROOT}/toolbox/local/userpath.m</file>
+      <file>${PROJECT_ROOT}/ArcCheckRadIso.fig</file>
+      <file>${PROJECT_ROOT}/BrowseCallback.m</file>
+      <file>${PROJECT_ROOT}/ClearCallback.m</file>
+      <file>${PROJECT_ROOT}/ComputeRadIso.m</file>
+      <file>${PROJECT_ROOT}/ComputeRadIso3d.m</file>
+      <file>${PROJECT_ROOT}/Event.m</file>
+      <file>${PROJECT_ROOT}/LoadVersionInfo.m</file>
+      <file>${PROJECT_ROOT}/ModeCallback.m</file>
+      <file>${PROJECT_ROOT}/PrintReport.fig</file>
+      <file>${PROJECT_ROOT}/PrintReport.m</file>
+      <file>${PROJECT_ROOT}/UpdateDisplay.m</file>
+      <file>${PROJECT_ROOT}/UpdateStatistics.m</file>
+      <file>${PROJECT_ROOT}/snc_extract/AnalyzeACFields.m</file>
+      <file>${PROJECT_ROOT}/snc_extract/ParseSNCacm.m</file>
+    </fileset.depfun>
+    <fileset.resources>
+      <file>${PROJECT_ROOT}/README.md</file>
+      <file>${PROJECT_ROOT}/license</file>
+    </fileset.resources>
+    <fileset.package />
+    <build-deliverables>
+      <file location="/Users/mgeurts/Documents/MATLAB/viewray_radiso" name="ViewRay Radiation Isocenter Verification.mlappinstall" optional="false">/Users/mgeurts/Documents/MATLAB/viewray_radiso/ViewRay Radiation Isocenter Verification.mlappinstall</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/Applications/MATLAB_R2014b.app</root>
+      <toolboxes />
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>true</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.10.2</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>maci64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
