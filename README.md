@@ -25,7 +25,7 @@ Finally, by disabling the Tongue and Groove (TG) offset, this tool and the metho
 
 ## Installation and Use
 
-To install the most recent release of this application, download [ArcCheckRadIso.mlappinstall](https://github.com/mwgeurts/viewray_radiso/archive/master.zip) from this repository, then open MATLAB, select the __Apps__ tab, and click __Install App__.  In the Install App dialog box, browse to the downloaded file and then click __Open__.  Finally, in the App Installer dialog box click __Install__ or __Reinstall__.  If using git, execute `git clone --recursive https://github.com/mwgeurts/viewray_radiso`.
+To install the most recent release of this application, download [ViewRay Radiation Isocenter Verification.mlappinstall](https://github.com/mwgeurts/viewray_radiso/archive/master.zip) from this repository, then open MATLAB, select the __Apps__ tab, and click __Install App__.  In the Install App dialog box, browse to the downloaded file and then click __Open__.  Finally, in the App Installer dialog box click __Install__ or __Reinstall__.  If using git, execute `git clone --recursive https://github.com/mwgeurts/viewray_radiso`.
 
 Global configuration variables can be modified by changing the values in `ArcCheckRadIso_OpeningFcn` prior to execution.  A log file will automatically be created in the same directory and can be used for troubleshooting.  For instructions on acquiring the input data and using this tool, see [Measurement Instructions](README.md#measurement-instructions). For information about software version and configuration pre-requisities, see [Compatibility and Requirements](README.md#compatibility-and-requirements).
 
