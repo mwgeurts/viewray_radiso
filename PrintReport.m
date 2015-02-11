@@ -76,6 +76,14 @@ for i = 1:length(varargin)
     end
 end
 
+% Set logo
+axes(handles.logo);
+rgb = imread('UWCrest_4c.png', 'BackgroundColor', [1 1 1]);
+image(rgb);
+axis equal;
+axis off;
+clear rgb;
+
 % Set report date/time
 set(handles.text12, 'String', datestr(now));
 
