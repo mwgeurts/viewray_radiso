@@ -14,7 +14,7 @@ The graphical user interface has been optimized for ViewRay by providing three p
 
 Finally, by disabling the Tongue and Groove (TG) offset, this tool and the methods used therein are not specific to ViewRay and are capable of analyzing data from any treatment system.  
 
-ArcCHECK is a trademark of Sun Nuclear Corporation.  MATLAB&reg; is a registered trademark of MathWorks Inc. ViewRay is a trademark of ViewRay Incorporated.
+ArcCHECK is a trademark of Sun Nuclear Corporation.  MATLAB&reg; is a registered trademark of MathWorks Inc. ViewRay is a registered trademark of ViewRay Incorporated.
 
 ## Contents
 
