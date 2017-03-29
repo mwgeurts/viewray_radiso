@@ -24,6 +24,7 @@ ArcCHECK is a trademark of Sun Nuclear Corporation.  MATLAB&reg; is a registered
 * [2D Computation Methods](README.md#2d-computation-methods)
 * [3D Computation Methods](README.md#3d-computation-methods)
 * [MLC Offset](README.md#mlc-offset)
+* [License](README.md#license)
 
 ## Installation and Use
 
@@ -103,3 +104,11 @@ The distance from each ray to the sphere center is computed for each optimizatio
 ## MLC Offset
 
 In addition to computing the radiation isocenter for a set of exposures, the tool computes the distance from isocenter to the central ray perpendicular to the ray, along the MLC X and Y directions.  Termed _MLC Offsets_, these values represent the amount each square MLC field is shifted along the MLC X and Y directions relative to the identified minimum isocenter, and can be used to recalibrate or reposition the ViewRay treatment heads.  In the MLC X direction, a systematic positive or negative shift in offsets suggests that at all angles the MLC is shifted in the same direction, and the radiation isocenter minimum radius could likely be reduced by adjusting the MLC calibration offset value (or zero value).  This is particularly true if the minimum radius is being limited by opposing exposures, where the radius will be limited by the amount of MLC X offset.  In the Y direction, differences in MLC offsets with gantry angle or between heads is suggestive of non-coplanarities in the head(s).
+
+## License
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
